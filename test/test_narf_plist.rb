@@ -1,3 +1,10 @@
+##############################################################
+# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
+#                 Patrick May <patrick@hexane.org>           #
+#                                                            #
+# Distributed under the MIT license.                         #
+##############################################################
+
 require 'test/unit'
 require 'pp'
 
@@ -5,7 +12,7 @@ require 'plist'
 
 class TestPlist < Test::Unit::TestCase
   def test_Plist_parse_xml
-    result = Plist::parse_xml("test/AlbumData.xml")
+    result = Plist::parse_xml("test/assets/AlbumData.xml")
 
     # dict
     assert_kind_of( Hash, result )
@@ -54,7 +61,7 @@ class TestPlist < Test::Unit::TestCase
 
   # date fields are credited to 
   def test_date_fields
-    result = Plist::parse_xml("test/Cookies.plist")
+    result = Plist::parse_xml("test/assets/Cookies.plist")
     assert_kind_of( DateTime, result.first['Expires'] )
     assert_equal( "2007-10-25T12:36:35Z", result.first['Expires'].to_s )
   end
@@ -73,7 +80,7 @@ class TestPlist < Test::Unit::TestCase
     assert_equal( Plist::_xml("<dict>\n\t<key>False</key>\n\t<false/>\n\t<key>True</key>\n\t<true/>\n</dict>"),
                   { 'True' => true, 'False' => false }.to_plist )
 
-    source = File.open("test/AlbumData.xml") { |f| f.read }
+    source = File.open("test/assets/AlbumData.xml") { |f| f.read }
 
     result = Plist::parse_xml(source)
   
@@ -90,13 +97,13 @@ class TestPlist < Test::Unit::TestCase
   # who discovered the plist with the data tag
   # supplied the test data, and provided the parsing code.
   def test_data
-    data = Plist::parse_xml("test/example_data.plist");
-    assert_equal( File.open("test/example_data.jpg"){|f| f.read }, data['image'].read )
-    assert_equal( File.open("test/example_data.plist"){|f| f.read }, data.to_plist )
+    data = Plist::parse_xml("test/assets/example_data.plist");
+    assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
+    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
 
-    data['image'] = StringIO.new( File.open("test/example_data.jpg"){ |f| f.read } )
+    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
     File.open('temp.plist', 'w'){|f| f.write data.to_plist }
-    assert_equal( File.open("test/example_data.plist"){|f| f.read }, data.to_plist )
+    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
 
     File.delete('temp.plist') if File.exists?('hello.plist')
 

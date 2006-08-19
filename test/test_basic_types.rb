@@ -1,11 +1,9 @@
-#!/usr/bin/env ruby
-
-######################################
-# Copyright 2006, Ben Bleything.     #
-#                <ben@bleything.net> #
-#                                    #
-# Distributed under the MIT license. #
-######################################
+##############################################################
+# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
+#                 Patrick May <patrick@hexane.org>           #
+#                                                            #
+# Distributed under the MIT license.                         #
+##############################################################
 
 require 'test/unit'
 require 'plist'
