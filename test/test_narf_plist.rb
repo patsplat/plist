@@ -105,7 +105,7 @@ class TestPlist < Test::Unit::TestCase
     File.open('temp.plist', 'w'){|f| f.write data.to_plist }
     assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
 
-    File.delete('temp.plist') if File.exists?('hello.plist')
+    File.delete('temp.plist') if File.exists?('temp.plist')
 
   end
 
