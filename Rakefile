@@ -1,9 +1,9 @@
 ##############################################################
-# Copyright 2006, Ben Bleything.                             #
-#                <ben@bleything.net>                         #
+# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
+#                 Patrick May <patrick@hexane.org>           #
 #                                                            #
 # Based heavily on Geoffrey Grosenbach's Rakefile for gruff. #
-# Includes whitespace-fixing code based on code from Typo.   #
+# Includes whitespace-fixing task based on code from Typo.   #
 #                                                            #
 # Distributed under the MIT license.                         #
 ##############################################################
@@ -27,9 +27,9 @@ PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
 RELEASE_NAME  = "REL #{PKG_VERSION}"
 
 RUBYFORGE_PROJECT = "plist"
-RUBYFORGE_USER    = "bleything"
+RUBYFORGE_USER    = ENV['RUBYFORGE_USER']
 
-TEST_FILES    = Dir.glob('test/test_*.rb').delete_if {|item| item.include?( "\.svn" ) }
+TEST_FILES    = Dir.glob('test/**/*').delete_if {|item| item.include?( "\.svn" ) }
 RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE" ] + TEST_FILES + Dir.glob( "lib/*" ).delete_if { |item| item.include?( "\.svn" ) }
 
 task :default => [ :test ]
@@ -40,7 +40,7 @@ Rake::TestTask.new { |t|
   t.verbose = true
 }
 
-desc "Clean pkg and docs, remove .bak files"
+desc "Clean pkg and rdoc, remove .bak files"
 task :clean => [ :clobber_rdoc, :clobber_package ] do
   puts cmd = "find . -type f -name *.bak -delete"
   `#{cmd}`
@@ -85,17 +85,18 @@ end
 
 desc "Copy documentation to rubyforge"
 task :update_rdoc => [ :rdoc ] do
-  Rake::SshDirPublisher.new("#{RUBYFORGE_USER}@rubyforge.org", "/var/www/gforge-projects/#{RUBYFORGE_PROJECT}", "docs").upload
+  Rake::SshDirPublisher.new("#{RUBYFORGE_USER}@rubyforge.org", "/var/www/gforge-projects/#{RUBYFORGE_PROJECT}/sekr1t", "rdoc").upload
 end
 
 # Genereate the RDoc documentation
 Rake::RDocTask.new { |rdoc|
-  rdoc.rdoc_dir = 'docs'
-  rdoc.title    = "PropertyList Generator -- plist"
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title    = "All-purpose Property List manipulation library"
   rdoc.options << '-SNmREADME'
-  rdoc.template = "#{ENV['template']}.rb" if ENV['template']
+  rdoc.template = "docs/jamis-template.rb"
   rdoc.rdoc_files.include('README', 'MIT-LICENSE', 'CHANGELOG')
-  rdoc.rdoc_files.include('lib/plist.rb')
+  rdoc.rdoc_files.include Dir.glob('docs/**').delete_if {|f| f.include? 'jamis' }
+  rdoc.rdoc_files.include('lib/**')
 }
 
 # Create compressed packages
@@ -103,15 +104,14 @@ spec = Gem::Specification.new do |s|
   s.name    = PKG_NAME
   s.version = PKG_VERSION
 
-  s.summary     = "Serialize your data as a Property List (aka plist)."
+  s.summary     = "All-purpose Property List manipulation library."
   s.description = <<-EOD
-The Property List (plist) Generator allows you to serialize your data to Property Lists.  This is especially useful when writing system-level code for Mac OS X, but has other applications as well.  The basic Ruby datatypes (numbers, strings, symbols, dates/times, arrays, and hashes) can be natively converted to plist types, and other types are Marshal'ed into the plist <data> type.
+Plist is a library to manipulate Property List files, also known as plists.  It can parse plist files into native Ruby data structures as well as generating new plist files from your Ruby objects.
 EOD
 
-  s.author   = "Ben Bleything"
-  s.email    = "ben@bleything.net"
-  s.homepage = "http://projects.bleything.net/plist"
-
+  s.authors  = "Ben Bleything and Patrick May"
+  s.homepage = "http://plist.rubyforge.org"
+  
   s.rubyforge_project = RUBYFORGE_PROJECT
 
   s.has_rdoc = true
