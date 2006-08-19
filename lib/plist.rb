@@ -1,57 +1,21 @@
+#--
+##############################################################
+# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
+# Patrick May <patrick@hexane.org>                           #
+#                                                            #
+# Distributed under the MIT license.                         #
+##############################################################
+#++
+#
 # Plist parses Mac OS X xml property list files into ruby data structures.
 #
 # === Load a plist file
 # This is the main point of the library:
 #
 #   r = Plist::parse_xml( filename_or_xml )
-#
-# === Save a plist
-# You can turn the variables back into a plist string:
-#
-#   r.to_plist
-#
-# There is a convenience method for saving a variable to a file:
-#
-#   r.save_plist(filename)
-#
-# Only these ruby types can be converted into a plist:
-#
-#   String
-#   Float
-#   DateTime
-#   Integer
-#   FalseClass
-#   TrueClass
-#   Array
-#   Hash
-#
-# Notes:
-# 
-# + Array and Hash are recursive -- the elements of an Array and the values of a Hash
-# must convert to a plist.
-# + The keys of the Hash must be strings.
-# + The contents of data elements are returned as a Tempfile.
-# + Data elements can be set with to an open IO or a StringIO
-#
-# If you have suggestions for mapping other Ruby types to the plist types, send a note to:
-# 
-#   mailto:plist@hexane.org
-#
-# I'll take a look and probably add it, I'm just reticent to create too many
-# "convenience" methods without at least agreeing with someone :-)
-#
-# === Credits
-# plist.rb has been implemented by Patrick May.  A few other folks have been helpful in developing plist.rb:
-#
-#   + Martin Dittus, who pointed out that Time wasn't enough for plist Dates,
-#     especially those in "~/Library/Cookies/Cookies.plist"
-#
-#   + Chuck Remes, who pushed me towards implementing #to_plist
-#
-#   + Mat Schaffer, who supplied code and test cases for <data> elements
-#
 class Plist
-  
+  VERSION = '0.0.1'
+
   TEMPLATE = <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -63,15 +27,15 @@ XML
     TEMPLATE.sub( /%plist%/, xml )
   end
 
-# Note that I don't use these two elements much:
-#
-#  + Date elements are returned as DateTime objects.
-#  + Data elements are implemented as Tempfiles
-#
-# Plist::parse_xml will blow up if it encounters a data element.
-# If you encounter such an error, or if you have a Date element which
-# can't be parsed into a Time object, please send your plist file to
-# plist@hexane.org so that I can implement the proper support.
+  # Note that I don't use these two elements much:
+  #
+  #  + Date elements are returned as DateTime objects.
+  #  + Data elements are implemented as Tempfiles
+  #
+  # Plist::parse_xml will blow up if it encounters a data element.
+  # If you encounter such an error, or if you have a Date element which
+  # can't be parsed into a Time object, please send your plist file to
+  # plist@hexane.org so that I can implement the proper support.
   def Plist::parse_xml( filename_or_xml )
     listener = Listener.new
     #parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
@@ -82,7 +46,7 @@ XML
 
   class Listener
     #include REXML::StreamListener
-    
+
     attr_accessor :result, :open
 
     def initialize
@@ -90,11 +54,11 @@ XML
       @open   = Array.new
     end
 
-    
+
     def tag_start(name, attributes)
       @open.push PTag::mappings[name].new
     end
-   
+
     def text( contents )
       @open.last.text = contents if @open.last
     end
@@ -114,23 +78,23 @@ XML
       @filename_or_xml = filename_or_xml
       @listener = listener
     end
-    
+
     TEXT       = /([^<]+)/
     XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/um
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/um
-      
 
-    def parse
-      plist_tags = PTag::mappings.keys.join('|')
-      start_tag  = /<(#{plist_tags})([^>]*)>/i
-      end_tag    = /<\/(#{plist_tags})[^>]*>/i
-    
-      require 'strscan'
-      @scanner = StringScanner.new( if (File.exists? @filename_or_xml)
-                                      File.open(@filename_or_xml, "r") {|f| f.read}
-                                    else
-                                      @filename_or_xml
-                                    end )
+
+      def parse
+        plist_tags = PTag::mappings.keys.join('|')
+        start_tag  = /<(#{plist_tags})([^>]*)>/i
+        end_tag    = /<\/(#{plist_tags})[^>]*>/i
+
+        require 'strscan'
+        @scanner = StringScanner.new( if (File.exists? @filename_or_xml)
+        File.open(@filename_or_xml, "r") {|f| f.read}
+      else
+        @filename_or_xml
+      end )
       until @scanner.eos?
         if @scanner.scan(XMLDECL_PATTERN)
         elsif @scanner.scan(DOCTYPE_PATTERN)
@@ -184,7 +148,7 @@ XML
     def to_ruby
       dict = Hash.new
       key = nil
-      
+
       children.each do |c|
         if key.nil?
           key = c.to_ruby
@@ -197,13 +161,13 @@ XML
       dict
     end
   end
-  
+
   class PKey < PTag
     def to_ruby
       text
     end
   end
- 
+
   class PString < PTag
     def to_ruby
       text || ''
@@ -261,7 +225,6 @@ XML
       tf
     end
   end
-
   module Emit
     def save_plist(filename)
       File.open(filename, 'wb') do |f|
@@ -378,11 +341,11 @@ require 'stringio'
     def to_plist_fragment
       self.rewind
       data = self.read
-      
+
       output = "<data>\n"
       Base64::encode64(data).gsub(/\s+/, '').scan(/.{1,68}/o) { output << $& << "\n" }
       output << "</data>"
-      
+
       output
     end
   end
