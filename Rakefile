@@ -113,7 +113,7 @@ EOD
 
   s.authors  = "Ben Bleything and Patrick May"
   s.homepage = "http://plist.rubyforge.org"
-  
+
   s.rubyforge_project = RUBYFORGE_PROJECT
 
   s.has_rdoc = true

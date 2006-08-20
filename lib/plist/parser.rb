@@ -44,7 +44,7 @@ XML
 
   class Listener
     #include REXML::StreamListener
-    
+
     attr_accessor :result, :open
 
     def initialize
@@ -52,11 +52,11 @@ XML
       @open   = Array.new
     end
 
-    
+
     def tag_start(name, attributes)
       @open.push PTag::mappings[name].new
     end
-   
+
     def text( contents )
       @open.last.text = contents if @open.last
     end
@@ -76,17 +76,17 @@ XML
       @filename_or_xml = filename_or_xml
       @listener = listener
     end
-    
+
     TEXT       = /([^<]+)/
     XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/um
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/um
-      
+
 
     def parse
       plist_tags = PTag::mappings.keys.join('|')
       start_tag  = /<(#{plist_tags})([^>]*)>/i
       end_tag    = /<\/(#{plist_tags})[^>]*>/i
-    
+
       require 'strscan'
       @scanner = StringScanner.new( if (File.exists? @filename_or_xml)
                                       File.open(@filename_or_xml, "r") {|f| f.read}
@@ -102,7 +102,7 @@ XML
             @listener.tag_end(@scanner[1])
           end
         elsif @scanner.scan(TEXT)
-          @listener.text(@scanner[1]) 
+          @listener.text(@scanner[1])
         elsif @scanner.scan(end_tag)
           @listener.tag_end(@scanner[1])
         else
@@ -146,7 +146,7 @@ XML
     def to_ruby
       dict = Hash.new
       key = nil
-      
+
       children.each do |c|
         if key.nil?
           key = c.to_ruby
@@ -159,13 +159,13 @@ XML
       dict
     end
   end
-  
+
   class PKey < PTag
     def to_ruby
       text
     end
   end
- 
+
   class PString < PTag
     def to_ruby
       text || ''

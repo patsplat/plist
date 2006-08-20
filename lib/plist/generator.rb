@@ -28,7 +28,7 @@
 #   Hash
 #
 # Notes:
-# 
+#
 # + Array and Hash are recursive -- the elements of an Array and the values of a Hash
 # must convert to a plist.
 # + The keys of the Hash must be strings.
@@ -36,7 +36,7 @@
 # + Data elements can be set with to an open IO or a StringIO
 #
 # If you have suggestions for mapping other Ruby types to the plist types, send a note to:
-# 
+#
 #   mailto:plist@hexane.org
 #
 # I'll take a look and probably add it, I'm just reticent to create too many
@@ -158,11 +158,11 @@ require 'stringio'
     def to_plist_fragment
       self.rewind
       data = self.read
-      
+
       output = "<data>\n"
       Base64::encode64(data).gsub(/\s+/, '').scan(/.{1,68}/o) { output << $& << "\n" }
       output << "</data>"
-      
+
       output
     end
   end

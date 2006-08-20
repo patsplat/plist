@@ -35,7 +35,7 @@ class TestPlist < Test::Unit::TestCase
                      "AlbumName"=>"Roll 1",
                      "AlbumId"=>6}],
                   result["List of Rolls"] )
-    
+
     # string
     assert_kind_of( String, result["Application Version"] )
     assert_equal( "5.0.4 (263)", result["Application Version"] )
@@ -59,7 +59,7 @@ class TestPlist < Test::Unit::TestCase
   #end
 
 
-  # date fields are credited to 
+  # date fields are credited to
   def test_date_fields
     result = Plist::parse_xml("test/assets/Cookies.plist")
     assert_kind_of( DateTime, result.first['Expires'] )
@@ -83,7 +83,7 @@ class TestPlist < Test::Unit::TestCase
     source = File.open("test/assets/AlbumData.xml") { |f| f.read }
 
     result = Plist::parse_xml(source)
-  
+
     assert_equal( result, Plist::parse_xml(result.to_plist) )
 
     File.delete('hello.plist') if File.exists?('hello.plist')
