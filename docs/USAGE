@@ -1,0 +1,51 @@
+=== Example Property List
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+          <key>FirstName</key>
+          <string>John</string>
+
+          <key>LastName</key>
+          <string>Public</string>
+
+          <key>StreetAddr1</key>
+          <string>123 Anywhere St.</string>
+
+          <key>StateProv</key>
+          <string>CA</string>
+
+          <key>City</key>
+          <string>Some Town</string>
+
+          <key>CountryName</key>
+          <string>United States</string>
+
+          <key>AreaCode</key>
+          <string>555</string>
+
+          <key>LocalPhoneNumber</key>
+          <string>5551212</string>
+
+          <key>ZipPostal</key>
+          <string>12345</string>
+  </dict>
+  </plist>
+  
+=== Parsing
+
+  result = Plist::parse_xml("path/to/example.plist")
+
+  result.class
+  => Hash
+
+  "#{result["FirstName"]} #{result["LastName"]}"
+  => "John Public"
+
+  result["ZipPostal"]
+  => "12345"
+  
+=== Generation
+
+  coming.soon {|i| i.promise }
