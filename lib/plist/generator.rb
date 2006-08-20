@@ -54,116 +54,81 @@ module Plist
     #
     # Write me if you think another class can be coerced safely into one of the
     # expected plist classes (plist@hexane.org)
-    def to_plist( header = true )
-      if (header)
-        Plist::_xml(self.to_plist_fragment)
+    def to_plist(header = true)
+      output = []
+
+      if header
+        output << '<?xml version="1.0" encoding="UTF-8"?>'
+        output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
+        output << '<plist version="1.0">'
+      end
+
+      output << plist_node(self)
+
+      output << '</plist>' if header
+
+      return output.join
+    end
+
+    private
+    def plist_node(element)
+      output = ''
+      case element
+      when Array
+        output << tag('array') {
+          element.collect {|e| plist_node(e)}.join
+        }
+      when Hash
+        inner_tags = []
+
+        element.each do |k,v|
+          inner_tags << tag('key', k.to_s)
+          inner_tags << plist_node(v)
+        end
+
+        output << tag('dict') {
+          inner_tags.join
+        }
+      when true, false
+        output << "<#{element}/>"
+      when Time
+        output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
+      when Date # also catches DateTime
+        output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
+      when String, Symbol, Fixnum, Bignum, Integer, Float
+        output << tag(element_type(element), element.to_s)
       else
-        self.to_plist_fragment
+        output << tag('data', Marshal.dump(element))
+      end
+
+      return output
+    end
+
+    def tag(type, contents = '', &block)
+      contents << block.call if block_given?
+
+      return "<#{type}>#{contents.to_s}</#{type}>"
+    end
+
+    def element_type(item)
+      return case item
+        when Array:                   'array'
+        when String, Symbol:          'string'
+        when Fixnum, Bignum, Integer: 'integer'
+        when Float:                   'real'
+        when Array:                   'array'
+        when Hash:                    'dict'
+        else
+          raise "Don't know about this data type... something must be wrong!"
       end
     end
-  end
-end
-
-class String
-  include Plist::Emit
-  def to_plist_fragment
-    "<string>#{self}</string>"
-  end
-end
-
-class Symbol
-  include Plist::Emit
-  def to_plist_fragment
-    "<string>#{self}</string>"
-  end
-end
-
-class Float
-  include Plist::Emit
-  def to_plist_fragment
-    "<real>#{self}</real>"
-  end
-end
-
-class Time
-  include Plist::Emit
-  def to_plist_fragment
-    "<date>#{self.utc.strftime('%Y-%m-%dT%H:%M:%SZ')}</date>"
-  end
-end
-
-class Date
-  include Plist::Emit
-  def to_plist_fragment
-    "<date>#{self.strftime('%Y-%m-%dT%H:%M:%SZ')}</date>"
-  end
-end
-
-class Integer
-  include Plist::Emit
-  def to_plist_fragment
-    "<integer>#{self}</integer>"
-  end
-end
-
-class FalseClass
-  include Plist::Emit
-  def to_plist_fragment
-    "<false/>"
-  end
-end
-
-class TrueClass
-  include Plist::Emit
-  def to_plist_fragment
-    "<true/>"
   end
 end
 
 class Array
   include Plist::Emit
-  def to_plist_fragment
-    fragment = "<array>\n"
-    self.each do |e|
-      element_plist = e.to_plist_fragment
-      element_plist.each do |l|
-        fragment += "\t#{l.chomp}\n"
-      end
-    end
-    fragment += "</array>"
-    fragment
-  end
 end
 
 class Hash
   include Plist::Emit
-  def to_plist_fragment
-    fragment = "<dict>\n"
-    self.keys.sort.each do |k|
-      fragment += "\t<key>#{k}</key>\n"
-      element_plist = self[k].to_plist_fragment
-      element_plist.each do |l|
-        fragment += "\t#{l.chomp}\n"
-      end
-    end
-    fragment += "</dict>"
-    fragment
-  end
-end
-
-require 'stringio'
-[ IO, StringIO ].each do |io_class|
-  io_class.module_eval do
-    include Plist::Emit
-    def to_plist_fragment
-      self.rewind
-      data = self.read
-
-      output = "<data>\n"
-      Base64::encode64(data).gsub(/\s+/, '').scan(/.{1,68}/o) { output << $& << "\n" }
-      output << "</data>"
-
-      output
-    end
-  end
 end

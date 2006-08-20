@@ -10,7 +10,7 @@ require 'plist'
 
 class TestBasicTypes < Test::Unit::TestCase
   def wrap(tag, content)
-    return "<array>\n\t<#{tag}>#{content}</#{tag}>\n</array>"
+    return "<array><#{tag}>#{content}</#{tag}></array>"
   end
 
   def test_strings
@@ -33,8 +33,8 @@ class TestBasicTypes < Test::Unit::TestCase
   end
 
   def test_booleans
-    assert_equal "<array>\n\t<true/>\n</array>",  [true].to_plist(false)
-    assert_equal "<array>\n\t<false/>\n</array>", [false].to_plist(false)
+    assert_equal "<array><true/></array>",  [true].to_plist(false)
+    assert_equal "<array><false/></array>", [false].to_plist(false)
   end
 
   def test_time

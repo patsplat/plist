@@ -67,13 +67,6 @@ class TestPlist < Test::Unit::TestCase
   end
 
   def test_to_plist
-    assert_equal( Plist::_xml("<string>Hello, World</string>"),     "Hello, World".to_plist )
-    assert_equal( Plist::_xml("<real>151936595.697543</real>"),     151936595.697543.to_plist )
-    assert_equal( Plist::_xml("<date>2006-04-21T16:47:58Z</date>"), DateTime.parse("2006-04-21T16:47:58Z").to_plist )
-    assert_equal( Plist::_xml("<integer>999000</integer>"),         999000.to_plist )
-    assert_equal( Plist::_xml("<false/>"),                          false.to_plist )
-    assert_equal( Plist::_xml("<true/>"),                           true.to_plist )
-
     assert_equal( Plist::_xml("<array>\n\t<true/>\n\t<false/>\n</array>"),
                   [ true, false ].to_plist )
 
