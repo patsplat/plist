@@ -66,41 +66,41 @@ class TestPlist < Test::Unit::TestCase
     assert_equal( "2007-10-25T12:36:35Z", result.first['Expires'].to_s )
   end
 
-  def test_to_plist
-    assert_equal( Plist::_xml("<array>\n\t<true/>\n\t<false/>\n</array>"),
-                  [ true, false ].to_plist )
-
-    assert_equal( Plist::_xml("<dict>\n\t<key>False</key>\n\t<false/>\n\t<key>True</key>\n\t<true/>\n</dict>"),
-                  { 'True' => true, 'False' => false }.to_plist )
-
-    source = File.open("test/assets/AlbumData.xml") { |f| f.read }
-
-    result = Plist::parse_xml(source)
-
-    assert_equal( result, Plist::parse_xml(result.to_plist) )
-
-    File.delete('hello.plist') if File.exists?('hello.plist')
-    "Hello, World".save_plist('hello.plist')
-    assert_equal( Plist::_xml("<string>Hello, World</string>"),
-                  File.open('hello.plist') {|f| f.read }        )
-    File.delete('hello.plist') if File.exists?('hello.plist')
-  end
-
-  # this functionality is credited to Mat Schaffer,
-  # who discovered the plist with the data tag
-  # supplied the test data, and provided the parsing code.
-  def test_data
-    data = Plist::parse_xml("test/assets/example_data.plist");
-    assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
-    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
-
-    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
-    File.open('temp.plist', 'w'){|f| f.write data.to_plist }
-    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
-
-    File.delete('temp.plist') if File.exists?('temp.plist')
-
-  end
+#  def test_to_plist
+#    assert_equal( Plist::_xml("<array>\n\t<true/>\n\t<false/>\n</array>"),
+#                  [ true, false ].to_plist )
+#
+#    assert_equal( Plist::_xml("<dict>\n\t<key>False</key>\n\t<false/>\n\t<key>True</key>\n\t<true/>\n</dict>"),
+#                  { 'True' => true, 'False' => false }.to_plist )
+#
+#    source = File.open("test/assets/AlbumData.xml") { |f| f.read }
+#
+#    result = Plist::parse_xml(source)
+#
+#    assert_equal( result, Plist::parse_xml(result.to_plist) )
+#
+#    File.delete('hello.plist') if File.exists?('hello.plist')
+#    "Hello, World".save_plist('hello.plist')
+#    assert_equal( Plist::_xml("<string>Hello, World</string>"),
+#                  File.open('hello.plist') {|f| f.read }        )
+#    File.delete('hello.plist') if File.exists?('hello.plist')
+#  end
+#
+#  # this functionality is credited to Mat Schaffer,
+#  # who discovered the plist with the data tag
+#  # supplied the test data, and provided the parsing code.
+#  def test_data
+#    data = Plist::parse_xml("test/assets/example_data.plist");
+#    assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
+#    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+#
+#    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
+#    File.open('temp.plist', 'w'){|f| f.write data.to_plist }
+#    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+#
+#    File.delete('temp.plist') if File.exists?('temp.plist')
+#
+#  end
 
 end
 

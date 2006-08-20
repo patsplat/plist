@@ -49,25 +49,27 @@ module Plist
       end
     end
 
+    # Helper method for injecting into classes
+    def to_plist(header = true)
+      return Plist::Emit.dump(self, header)
+    end
+    
     # Only the expected classes can be emitted as a plist:
     #   String, Float, DateTime, Integer, TrueClass, FalseClass, Array, Hash
     #
-    # Write me if you think another class can be coerced safely into one of the
-    # expected plist classes (plist@hexane.org)
-    def to_plist(header = true)
-      output = []
+    # Write us (via RubyForge) if you think another class can be coerced safely 
+    # into one of the expected plist classes.
+    def self.dump(obj, header = false)
+      # This is really gross, but it allows Plist::Emit.dump(obj) to work.
+      #
+      # FIXME: I should find a better way.
+      self.extend(self)
 
-      if header
-        output << '<?xml version="1.0" encoding="UTF-8"?>'
-        output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
-        output << '<plist version="1.0">'
-      end
-
-      output << plist_node(self)
-
-      output << '</plist>' if header
-
-      return output.join
+      output = plist_node(obj)
+      
+      output = wrap(output) if header
+      
+      return output
     end
 
     private
@@ -108,6 +110,20 @@ module Plist
       contents << block.call if block_given?
 
       return "<#{type}>#{contents.to_s}</#{type}>"
+    end
+    
+    def wrap(string)
+      output = []
+      
+      output << '<?xml version="1.0" encoding="UTF-8"?>'
+      output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
+      output << '<plist version="1.0">'
+      
+      output << string
+      
+      output << '</plist>'
+      
+      return output.join
     end
 
     def element_type(item)
