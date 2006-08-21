@@ -50,8 +50,8 @@ module Plist
     end
 
     # Helper method for injecting into classes
-    def to_plist(header = true)
-      return Plist::Emit.dump(self, header)
+    def to_plist(envelope = true)
+      return Plist::Emit.dump(self, envelope)
     end
     
     # Only the expected classes can be emitted as a plist:
@@ -59,7 +59,7 @@ module Plist
     #
     # Write us (via RubyForge) if you think another class can be coerced safely 
     # into one of the expected plist classes.
-    def self.dump(obj, header = false)
+    def self.dump(obj, envelope = true)
       # This is really gross, but it allows Plist::Emit.dump(obj) to work.
       #
       # FIXME: I should find a better way.
@@ -67,7 +67,7 @@ module Plist
 
       output = plist_node(obj)
       
-      output = wrap(output) if header
+      output = wrap(output) if envelope
       
       return output
     end
