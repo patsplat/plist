@@ -40,10 +40,21 @@ Rake::TestTask.new { |t|
   t.verbose = true
 }
 
-desc "Clean pkg and rdoc, remove .bak files"
-task :clean => [ :clobber_rdoc, :clobber_package ] do
+desc "Clean pkg, coverage, and rdoc; remove .bak files"
+task :clean => [ :clobber_rdoc, :clobber_package, :clobber_coverage ] do
   puts cmd = "find . -type f -name *.bak -delete"
   `#{cmd}`
+end
+
+task :clobber_coverage do
+  puts cmd = "rm -rf coverage"
+  `#{cmd}`
+end
+
+desc "Generate coverage analysis with rcov (requires rcov to be installed)"
+task :rcov => [ :clobber_coverage ] do
+  puts cmd = "rcov -Ilib --xrefs -T test/*.rb"
+  puts `#{cmd}`
 end
 
 desc "Strip trailing whitespace and fix newlines for all release files"
