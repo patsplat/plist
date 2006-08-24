@@ -53,27 +53,22 @@ module Plist
     def to_plist(envelope = true)
       return Plist::Emit.dump(self, envelope)
     end
-    
+
     # Only the expected classes can be emitted as a plist:
     #   String, Float, DateTime, Integer, TrueClass, FalseClass, Array, Hash
     #
     # Write us (via RubyForge) if you think another class can be coerced safely 
     # into one of the expected plist classes.
     def self.dump(obj, envelope = true)
-      # This is really gross, but it allows Plist::Emit.dump(obj) to work.
-      #
-      # FIXME: I should find a better way.
-      self.extend(self)
-
       output = plist_node(obj)
-      
+
       output = wrap(output) if envelope
-      
+
       return output
     end
 
     private
-    def plist_node(element)
+    def self.plist_node(element)
       output = ''
       case element
       when Array
@@ -106,27 +101,27 @@ module Plist
       return output
     end
 
-    def tag(type, contents = '', &block)
+    def self.tag(type, contents = '', &block)
       contents << block.call if block_given?
 
       return "<#{type}>#{contents.to_s}</#{type}>"
     end
-    
-    def wrap(string)
+
+    def self.wrap(string)
       output = []
-      
+
       output << '<?xml version="1.0" encoding="UTF-8"?>'
       output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
       output << '<plist version="1.0">'
-      
+
       output << string
-      
+
       output << '</plist>'
-      
+
       return output.join
     end
 
-    def element_type(item)
+    def self.element_type(item)
       return case item
         when Array:                   'array'
         when String, Symbol:          'string'
