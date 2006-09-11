@@ -75,11 +75,19 @@ module Plist
       end_tag    = /<\/(#{plist_tags})[^>]*>/i
 
       require 'strscan'
-      @scanner = StringScanner.new( if (File.exists? @filename_or_xml)
-                                      File.open(@filename_or_xml, "r") {|f| f.read}
-                                    else
-                                      @filename_or_xml
-                                    end )
+      
+      contents = (
+        if (File.exists? @filename_or_xml)
+          File.open(@filename_or_xml) {|f| f.read}
+        else
+          @filename_or_xml
+        end
+      )
+      
+      # FIXME - temporarily strip out comments until I (ben) can figure out how to make the scanner ignore them
+      contents.gsub!(/<!--.*?-->/, '')
+      
+      @scanner = StringScanner.new( contents )
       until @scanner.eos?
         if @scanner.scan(XMLDECL_PATTERN)
         elsif @scanner.scan(DOCTYPE_PATTERN)
@@ -201,19 +209,16 @@ module Plist
   require 'base64'
   class PData < PTag
     def to_ruby
-      # replacing Tempfile with StringIO
-      # think it might be a bit nicer
-      #require 'tempfile'
-      #tf = Tempfile.new("plist.tmp")
-      #tf.write Base64.decode64(text.gsub(/\s+/,''))
-      #tf.close
-      # is this a good idea?
-      #tf.open
-      #tf
-      io = StringIO.new
-      io.write Base64.decode64(text.gsub(/\s+/,''))
-      io.rewind
-      io
+      data = Base64.decode64(text.gsub(/\s+/, ''))
+
+      begin
+        return Marshal.load(data)
+      rescue Exception => e
+        io = StringIO.new
+        io.write data
+        io.rewind
+        return io
+      end
     end
   end
 end
