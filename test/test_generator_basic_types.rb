@@ -49,4 +49,38 @@ class TestBasicTypes < Test::Unit::TestCase
     assert_equal wrap('date', test_date.strftime('%Y-%m-%dT%H:%M:%SZ')), Plist::Emit.dump(test_date, false)
     assert_equal wrap('date', test_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')), Plist::Emit.dump(test_datetime, false)
   end
+
+  # generater tests from patrick's plist.rb code
+  def test_to_plist
+    assert_equal( Plist::_xml("<string>Hello, World</string>"),     "Hello, World".to_plist )
+    assert_equal( Plist::_xml("<real>151936595.697543</real>"),     151936595.697543.to_plist )
+    assert_equal( Plist::_xml("<date>2006-04-21T16:47:58Z</date>"), DateTime.parse("2006-04-21T16:47:58Z").to_plist )
+    assert_equal( Plist::_xml("<integer>999000</integer>"),         999000.to_plist )
+    assert_equal( Plist::_xml("<false/>"),                          false.to_plist )
+    assert_equal( Plist::_xml("<true/>"),                           true.to_plist )
+
+    assert_equal( Plist::_xml("<array>\n\t<true/>\n\t<false/>\n</array>"),
+                  [ true, false ].to_plist )
+
+    assert_equal( Plist::_xml("<dict>\n\t<key>False</key>\n\t<false/>\n\t<key>True</key>\n\t<true/>\n</dict>"),
+                  { 'True' => true, 'False' => false }.to_plist )
+
+    source = File.open("test/assets/AlbumData.xml") { |f| f.read }
+
+    result = Plist::parse_xml(source)
+
+    assert_equal( result, Plist::parse_xml(result.to_plist) )
+
+    File.delete('hello.plist') if File.exists?('hello.plist')
+    "Hello, World".save_plist('hello.plist')
+    assert_equal( Plist::_xml("<string>Hello, World</string>"),
+                  File.open('hello.plist') {|f| f.read }        )
+    File.delete('hello.plist') if File.exists?('hello.plist')
+  end
+
+  def test_escape_string_values
+    assert_equal( Plist::_xml("<string>&lt;plist&gt;</string>"),    "<plist>".to_plist )
+    assert_equal( Plist::_xml("<string>Fish &amp; Chips</string>"), "Fish & Chips".to_plist )
+  end
+
 end

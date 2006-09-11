@@ -1,12 +1,10 @@
-#--
-##############################################################
+#--###########################################################
 # Copyright 2006, Ben Bleything <ben@bleything.net> and      #
 # Patrick May <patrick@hexane.org>                           #
 #                                                            #
 # Distributed under the MIT license.                         #
 ##############################################################
 #++
-
 # === Save a plist
 # You can turn the variables back into a plist string:
 #
@@ -29,11 +27,10 @@
 #
 # Notes:
 #
-# + Array and Hash are recursive -- the elements of an Array and the values of a Hash
-# must convert to a plist.
-# + The keys of the Hash must be strings.
-# + The contents of data elements are returned as a Tempfile.
-# + Data elements can be set with to an open IO or a StringIO
+# * Array and Hash are recursive -- the elements of an Array and the values of a Hash must convert to a plist.
+# * The keys of the Hash must be strings.
+# * The contents of data elements are returned as a StringIO.
+# * Data elements can be set with to an open IO or a StringIO
 #
 # If you have suggestions for mapping other Ruby types to the plist types, send a note to:
 #
@@ -79,7 +76,7 @@ module Plist
         inner_tags = []
 
         element.each do |k,v|
-          inner_tags << tag('key', k.to_s)
+          inner_tags << tag('key', CGI::escapeHTML(k.to_s))
           inner_tags << plist_node(v)
         end
 
@@ -93,7 +90,7 @@ module Plist
       when Date # also catches DateTime
         output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
       when String, Symbol, Fixnum, Bignum, Integer, Float
-        output << tag(element_type(element), element.to_s)
+        output << tag(element_type(element), CGI::escapeHTML(element.to_s))
       else
         output << tag('data', Marshal.dump(element))
       end

@@ -1,12 +1,10 @@
-#--
-##############################################################
+#--###########################################################
 # Copyright 2006, Ben Bleything <ben@bleything.net> and      #
 # Patrick May <patrick@hexane.org>                           #
 #                                                            #
 # Distributed under the MIT license.                         #
 ##############################################################
 #++
-#
 # Plist parses Mac OS X xml property list files into ruby data structures.
 #
 # === Load a plist file
@@ -151,13 +149,13 @@ module Plist
 
   class PKey < PTag
     def to_ruby
-      text
+      CGI::unescapeHTML(text || '')
     end
   end
 
   class PString < PTag
     def to_ruby
-      text || ''
+      CGI::unescapeHTML(text || '')
     end
   end
 
@@ -201,15 +199,21 @@ module Plist
   end
 
   require 'base64'
-  require 'tempfile'
   class PData < PTag
     def to_ruby
-      tf = Tempfile.new("plist.tmp")
-      tf.write Base64.decode64(text.gsub(/\s+/,''))
-      tf.close
+      # replacing Tempfile with StringIO
+      # think it might be a bit nicer
+      #require 'tempfile'
+      #tf = Tempfile.new("plist.tmp")
+      #tf.write Base64.decode64(text.gsub(/\s+/,''))
+      #tf.close
       # is this a good idea?
-      tf.open
-      tf
+      #tf.open
+      #tf
+      io = StringIO.new
+      io.write Base64.decode64(text.gsub(/\s+/,''))
+      io.rewind
+      io
     end
   end
 end

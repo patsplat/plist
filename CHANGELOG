@@ -1,1 +1,6 @@
 = plist - All-purpose Property List manipulation library
+
+2006-09-10:
+  + Added encoding / decoding for entities (&amp; etc)
+  + Changed parsing of <data> elements to return StringIO objects
+  + Fixed bug with empty <key> tags
