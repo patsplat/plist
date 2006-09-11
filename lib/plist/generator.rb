@@ -133,12 +133,9 @@ module Plist
 
     def self.element_type(item)
       return case item
-        when Array:                   'array'
         when String, Symbol:          'string'
         when Fixnum, Bignum, Integer: 'integer'
         when Float:                   'real'
-        when Array:                   'array'
-        when Hash:                    'dict'
         else
           raise "Don't know about this data type... something must be wrong!"
       end
