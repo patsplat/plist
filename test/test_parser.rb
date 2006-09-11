@@ -6,7 +6,6 @@
 ##############################################################
 
 require 'test/unit'
-require 'pp'
 
 require 'plist'
 
