@@ -1,10 +1,10 @@
-##############################################################
+#--###########################################################
 # Copyright 2006, Ben Bleything <ben@bleything.net> and      #
 # Patrick May <patrick@hexane.org>                           #
 #                                                            #
 # Distributed under the MIT license.                         #
 ##############################################################
-
+#++
 # === Save a plist
 # You can turn the variables back into a plist string:
 #
