@@ -45,4 +45,15 @@ class TestGenerator < Test::Unit::TestCase
     
     assert_equal "<string>#{str}</string>", Plist::Emit.dump(so, false)
   end
+  
+  def test_write_plist
+    data = [1, :two, {:c => 'dee'}]
+    
+    data.save_plist('test.plist')
+    file = File.open('test.plist') {|f| f.read}
+    
+    assert_equal file, data.to_plist
+    
+    File.unlink('test.plist')
+  end
 end
