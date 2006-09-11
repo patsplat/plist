@@ -5,63 +5,54 @@
 # Distributed under the MIT license.                         #
 ##############################################################
 #++
-# === Save a plist
-# You can turn the variables back into a plist string:
-#
-#   r.to_plist
-#
-# There is a convenience method for saving a variable to a file:
-#
-#   r.save_plist(filename)
-#
-# Only these ruby types can be converted into a plist:
-#
-#   String
-#   Float
-#   DateTime
-#   Integer
-#   FalseClass
-#   TrueClass
-#   Array
-#   Hash
-#
-# Notes:
-#
-# * Array and Hash are recursive -- the elements of an Array and the values of a Hash must convert to a plist.
-# * The keys of the Hash must be strings.
-# * The contents of data elements are returned as a StringIO.
-# * Data elements can be set with to an open IO or a StringIO
-#
-# If you have suggestions for mapping other Ruby types to the plist types, send a note to:
-#
-#   mailto:plist@hexane.org
-#
-# I'll take a look and probably add it, I'm just reticent to create too many
-# "convenience" methods without at least agreeing with someone :-)
+# See Plist::Emit.
 module Plist
+  # === Create a plist
+  # You can dump an object to a plist in one of two ways:
+  # 
+  # * <tt>Plist::Emit.dump(obj)</tt>
+  # * <tt>obj.to_plist</tt>
+  #   * This requires that you mixin the <tt>Plist::Emit</tt> module, which is already done for +Array+ and +Hash+.
+  # 
+  # The following Ruby classes are converted into native plist types:
+  #   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time, true, false
+  # * +Array+ and +Hash+ are both recursive; their elements will be converted into plist nodes inside the <array> and <dict> containers (respectively).
+  # * +IO+ (and its descendants) and +StringIO+ objects are read from and their contents placed in a <data> element.
+  # * User classes may implement +to_plist_node+ to dictate how they should be serialized; otherwise the object will be passed to <tt>Marshal.dump</tt> and the result placed in a <data> element.
+  #
+  # For detailed usage instructions, refer to USAGE[link:files/docs/USAGE.html] and the methods documented below.
   module Emit
-    def save_plist(filename)
-      File.open(filename, 'wb') do |f|
-        f.write(self.to_plist)
-      end
-    end
-
-    # Helper method for injecting into classes
+    # Helper method for injecting into classes.  Calls <tt>Plist::Emit.dump</tt> with +self+.
     def to_plist(envelope = true)
       return Plist::Emit.dump(self, envelope)
     end
+    
+    # Helper method for injecting into classes.  Calls <tt>Plist::Emit.save_plist</tt> with +self+.
+    def save_plist(filename)
+      Plist::Emit.save_plist(self, filename)
+    end
 
-    # Only the expected classes can be emitted as a plist:
-    #   String, Float, DateTime, Integer, TrueClass, FalseClass, Array, Hash
+    # The following Ruby classes are converted into native plist types:
+    #   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time
     #
-    # Write us (via RubyForge) if you think another class can be coerced safely 
-    # into one of the expected plist classes.
+    # Write us (via RubyForge) if you think another class can be coerced safely into one of the expected plist classes.
+    #
+    # +IO+ and +StringIO+ objects are encoded and placed in <data> elements; other objects are <tt>Marshal.dump</tt>'ed unless they implement +to_plist_node+.
+    #
+    # The +envelope+ parameters dictates whether or not the resultant plist fragment is wrapped in the normal XML/plist header and footer.  Set it to false if you only want the fragment.
     def self.dump(obj, envelope = true)
       output = plist_node(obj)
 
       output = wrap(output) if envelope
 
       return output
+    end
+    
+    # Writes the serialized object's plist to the specified filename.
+    def self.save_plist(obj, filename)
+      File.open(filename, 'wb') do |f|
+        f.write(obj.to_plist)
+      end
     end
 
     private
@@ -143,10 +134,10 @@ module Plist
   end
 end
 
-class Array
+class Array #:nodoc:
   include Plist::Emit
 end
 
-class Hash
+class Hash #:nodoc:
   include Plist::Emit
 end
