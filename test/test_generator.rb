@@ -15,7 +15,6 @@ class TestGenerator < Test::Unit::TestCase
     to_plist = source.to_plist(false)
     plist_emit_dump = Plist::Emit.dump(source, false)
 
-
     assert_equal to_plist, plist_emit_dump
   end
 
