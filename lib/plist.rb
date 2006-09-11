@@ -10,6 +10,7 @@
 #
 # This is the main file for plist.  Everything interesting happens in Plist and Plist::Emit.
 
+require 'base64'
 require 'cgi'
 require 'stringio'
 

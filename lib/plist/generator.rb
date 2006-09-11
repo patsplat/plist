@@ -67,35 +67,45 @@ module Plist
     private
     def self.plist_node(element)
       output = ''
-      case element
-      when Array
-        output << tag('array') {
-          element.collect {|e| plist_node(e)}.join
-        }
-      when Hash
-        inner_tags = []
-
-        element.each do |k,v|
-          inner_tags << tag('key', CGI::escapeHTML(k.to_s))
-          inner_tags << plist_node(v)
-        end
-
-        output << tag('dict') {
-          inner_tags.join
-        }
-      when true, false
-        output << "<#{element}/>"
-      when Time
-        output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
-      when Date # also catches DateTime
-        output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
-      when String, Symbol, Fixnum, Bignum, Integer, Float
-        output << tag(element_type(element), CGI::escapeHTML(element.to_s))
+      
+      if element.respond_to? :to_plist_node
+        output << element.to_plist_node
       else
-        output << tag('data', Marshal.dump(element))
+        case element
+        when Array
+          output << tag('array') {
+            element.collect {|e| plist_node(e)}.join
+          }
+        when Hash
+          inner_tags = []
+
+          element.each do |k,v|
+            inner_tags << tag('key', CGI::escapeHTML(k.to_s))
+            inner_tags << plist_node(v)
+          end
+
+          output << tag('dict') {
+            inner_tags.join
+          }
+        when true, false
+          output << "<#{element}/>"
+        when Time
+          output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
+        when Date # also catches DateTime
+          output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
+        when String, Symbol, Fixnum, Bignum, Integer, Float
+          output << tag(element_type(element), CGI::escapeHTML(element.to_s))
+        else
+          output << comment( 'The <data> element below contains a Ruby object which has been serialized with Marshal.dump.' )
+          output << tag('data', Base64.encode64(Marshal.dump(element)))
+        end
       end
 
       return output
+    end
+    
+    def self.comment(content)
+      return "<!-- #{content} -->"
     end
 
     def self.tag(type, contents = '', &block)
