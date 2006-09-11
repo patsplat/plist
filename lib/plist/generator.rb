@@ -95,6 +95,9 @@ module Plist
           output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
         when String, Symbol, Fixnum, Bignum, Integer, Float
           output << tag(element_type(element), CGI::escapeHTML(element.to_s))
+        when IO, StringIO
+          contents = element.read
+          output << tag('data', Base64.encode64(contents))
         else
           output << comment( 'The <data> element below contains a Ruby object which has been serialized with Marshal.dump.' )
           output << tag('data', Base64.encode64(Marshal.dump(element)))
