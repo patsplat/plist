@@ -11,6 +11,8 @@
 # This is the main file for plist.  Everything interesting happens in Plist and Plist::Emit.
 
 require 'cgi'
+require 'stringio'
+
 require 'plist/generator'
 require 'plist/parser'
 

@@ -10,7 +10,7 @@ require 'pp'
 
 require 'plist'
 
-class TestPlist < Test::Unit::TestCase
+class TestParser < Test::Unit::TestCase
   def test_Plist_parse_xml
     result = Plist::parse_xml("test/assets/AlbumData.xml")
 
@@ -72,13 +72,17 @@ class TestPlist < Test::Unit::TestCase
   def test_data
     data = Plist::parse_xml("test/assets/example_data.plist");
     assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
-    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
 
-    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
-    File.open('temp.plist', 'w'){|f| f.write data.to_plist }
-    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+#    these do not test the parser, they test the generator.  Commenting for now; test coverage
+#    for this functionality will be in the new generator code.
 
-    File.delete('temp.plist') if File.exists?('temp.plist')
+#    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+
+#    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
+#    File.open('temp.plist', 'w'){|f| f.write data.to_plist }
+#    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+
+#    File.delete('temp.plist') if File.exists?('temp.plist')
 
   end
   
@@ -93,7 +97,7 @@ class TestPlist < Test::Unit::TestCase
   # bug fix for decoding entities
   #  reported by Matthias Peick <matthias@peick.de>
   def test_decode_entities
-    data = Plist::parse_xml(Plist::_xml('<string>Fish &amp; Chips</string>'))
+    data = Plist::parse_xml('<string>Fish &amp; Chips</string>')
     assert_equal('Fish & Chips', data)
   end
 
