@@ -54,6 +54,7 @@ class TestPlist < Test::Unit::TestCase
 
   end
 
+  # uncomment this test to work on speed optimization
   #def test_load_something_big
   #  plist = Plist::parse_xml( "~/Pictures/iPhoto Library/AlbumData.xml" )
   #end
@@ -64,33 +65,6 @@ class TestPlist < Test::Unit::TestCase
     result = Plist::parse_xml("test/assets/Cookies.plist")
     assert_kind_of( DateTime, result.first['Expires'] )
     assert_equal( "2007-10-25T12:36:35Z", result.first['Expires'].to_s )
-  end
-
-  def test_to_plist
-    assert_equal( Plist::_xml("<string>Hello, World</string>"),     "Hello, World".to_plist )
-    assert_equal( Plist::_xml("<real>151936595.697543</real>"),     151936595.697543.to_plist )
-    assert_equal( Plist::_xml("<date>2006-04-21T16:47:58Z</date>"), DateTime.parse("2006-04-21T16:47:58Z").to_plist )
-    assert_equal( Plist::_xml("<integer>999000</integer>"),         999000.to_plist )
-    assert_equal( Plist::_xml("<false/>"),                          false.to_plist )
-    assert_equal( Plist::_xml("<true/>"),                           true.to_plist )
-
-    assert_equal( Plist::_xml("<array>\n\t<true/>\n\t<false/>\n</array>"),
-                  [ true, false ].to_plist )
-
-    assert_equal( Plist::_xml("<dict>\n\t<key>False</key>\n\t<false/>\n\t<key>True</key>\n\t<true/>\n</dict>"),
-                  { 'True' => true, 'False' => false }.to_plist )
-
-    source = File.open("test/assets/AlbumData.xml") { |f| f.read }
-
-    result = Plist::parse_xml(source)
-
-    assert_equal( result, Plist::parse_xml(result.to_plist) )
-
-    File.delete('hello.plist') if File.exists?('hello.plist')
-    "Hello, World".save_plist('hello.plist')
-    assert_equal( Plist::_xml("<string>Hello, World</string>"),
-                  File.open('hello.plist') {|f| f.read }        )
-    File.delete('hello.plist') if File.exists?('hello.plist')
   end
 
   # this functionality is credited to Mat Schaffer,
@@ -109,6 +83,20 @@ class TestPlist < Test::Unit::TestCase
 
   end
 
+  # bug fix for empty <key>
+  # reported by Matthias Peick <matthias@peick.de>
+  # reported and fixed by Frederik Seiffert <ego@frederikseiffert.de>
+  def test_empty_dict_key
+    data = Plist::parse_xml("test/assets/test_empty_key.plist");
+    assert_equal("2", data['key']['subkey'])
+  end
+
+  # bug fix for decoding entities
+  #  reported by Matthias Peick <matthias@peick.de>
+  def test_decode_entities
+    data = Plist::parse_xml(Plist::_xml('<string>Fish &amp; Chips</string>'))
+    assert_equal('Fish & Chips', data)
+  end
 end
 
 __END__
