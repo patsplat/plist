@@ -8,7 +8,7 @@
 require 'test/unit'
 require 'plist'
 
-class TestCollections < Test::Unit::TestCase
+class TestGeneratorCollections < Test::Unit::TestCase
   def test_array
     assert_equal "<array><integer>1</integer><integer>2</integer><integer>3</integer></array>", [1,2,3].to_plist(false)
   end

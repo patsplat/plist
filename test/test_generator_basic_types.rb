@@ -8,7 +8,7 @@
 require 'test/unit'
 require 'plist'
 
-class TestBasicTypes < Test::Unit::TestCase
+class TestGeneratorBasicTypes < Test::Unit::TestCase
   def wrap(tag, content)
     return "<#{tag}>#{content}</#{tag}>"
   end
