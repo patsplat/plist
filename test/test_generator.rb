@@ -56,4 +56,25 @@ class TestGenerator < Test::Unit::TestCase
     
     File.unlink('test.plist')
   end
+
+  # this functionality is credited to Mat Schaffer,
+  # who discovered the plist with the data tag
+  # supplied the test data, and provided the parsing code.
+  def test_data
+    data = Plist::parse_xml("test/assets/example_data.plist");
+    assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
+
+#    these do not test the parser, they test the generator.  Commenting for now; test coverage
+#    for this functionality will be in the new generator code.
+
+    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+
+    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
+    File.open('temp.plist', 'w'){|f| f.write data.to_plist }
+    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+
+    File.delete('temp.plist') if File.exists?('temp.plist')
+
+  end
+  
 end
