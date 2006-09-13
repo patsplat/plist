@@ -91,7 +91,9 @@ module Plist
           element.rewind
           contents = element.read
           # note that apple plists are wrapped at a different length then
-          # what base
+          # what ruby's base64 wraps by default.
+          # I used #encode64 instead of #b64encode (which allows a length arg)
+          # for compatibility with 1.6.x
           data = "\n"
           Base64::encode64(contents).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
           output << tag('data', data)
