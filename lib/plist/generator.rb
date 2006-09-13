@@ -201,6 +201,13 @@ module Plist
   end
 end
 
+# we need to add this so sorting hash keys works properly
+class Symbol #:nodoc:
+  def <=> (other)
+    self.to_s <=> other.to_s
+  end
+end
+
 class Array #:nodoc:
   include Plist::Emit
 end
