@@ -95,11 +95,6 @@ END
     data = Plist::parse_xml("test/assets/example_data.plist");
     assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
 
-    # these do not test the parser, they test the generator.  Commenting for now; test coverage
-    # for this functionality will be in the new generator code.
-    #
-    #  No longer commented, but failing.
-
     # test writing data elements
     expected = File.read("test/assets/example_data.plist")
     result   = data.to_plist
