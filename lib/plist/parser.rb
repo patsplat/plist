@@ -12,17 +12,6 @@
 #
 #   r = Plist::parse_xml( filename_or_xml )
 module Plist
-  TEMPLATE = <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-%plist%
-</plist>
-XML
-  def Plist::_xml( xml )
-    TEMPLATE.sub( /%plist%/, xml )
-  end
-
 # Note that I don't use these two elements much:
 #
 #  + Date elements are returned as DateTime objects.
@@ -78,7 +67,9 @@ XML
     TEXT       = /([^<]+)/
     XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/um
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/um
-
+    COMMENT_START = /\A<!--/u
+    COMMENT_END = /.*?-->/um
+      
 
     def parse
       plist_tags = PTag::mappings.keys.join('|')
@@ -86,13 +77,20 @@ XML
       end_tag    = /<\/(#{plist_tags})[^>]*>/i
 
       require 'strscan'
-      @scanner = StringScanner.new( if (File.exists? @filename_or_xml)
-                                      File.open(@filename_or_xml, "r") {|f| f.read}
-                                    else
-                                      @filename_or_xml
-                                    end )
+      
+      contents = (
+        if (File.exists? @filename_or_xml)
+          File.open(@filename_or_xml) {|f| f.read}
+        else
+          @filename_or_xml
+        end
+      )
+      
+      @scanner = StringScanner.new( contents )
       until @scanner.eos?
-        if @scanner.scan(XMLDECL_PATTERN)
+        if @scanner.scan(COMMENT_START)
+          @scanner.scan(COMMENT_END)
+        elsif @scanner.scan(XMLDECL_PATTERN)
         elsif @scanner.scan(DOCTYPE_PATTERN)
         elsif @scanner.scan(start_tag)
           @listener.tag_start(@scanner[1], nil)
@@ -136,7 +134,7 @@ XML
 
   class PList < PTag
     def to_ruby
-      children.first.to_ruby
+      children.first.to_ruby if children.first
     end
   end
 
@@ -212,19 +210,16 @@ XML
   require 'base64'
   class PData < PTag
     def to_ruby
-      # replacing Tempfile with StringIO
-      # think it might be a bit nicer
-      #require 'tempfile'
-      #tf = Tempfile.new("plist.tmp")
-      #tf.write Base64.decode64(text.gsub(/\s+/,''))
-      #tf.close
-      # is this a good idea?
-      #tf.open
-      #tf
-      io = StringIO.new
-      io.write Base64.decode64(text.gsub(/\s+/,''))
-      io.rewind
-      io
+      data = Base64.decode64(text.gsub(/\s+/, ''))
+
+      begin
+        return Marshal.load(data)
+      rescue Exception => e
+        io = StringIO.new
+        io.write data
+        io.rewind
+        return io
+      end
     end
   end
 end
