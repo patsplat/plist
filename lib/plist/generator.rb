@@ -1,10 +1,10 @@
-#--###########################################################
+##############################################################
 # Copyright 2006, Ben Bleything <ben@bleything.net> and      #
 # Patrick May <patrick@hexane.org>                           #
 #                                                            #
 # Distributed under the MIT license.                         #
 ##############################################################
-#++
+#
 # See Plist::Emit.
 module Plist
   # === Create a plist
@@ -70,7 +70,8 @@ module Plist
         when Hash
           inner_tags = []
 
-          element.each do |k,v|
+          element.keys.sort.each do |k|
+            v = element[k]
             inner_tags << tag('key', CGI::escapeHTML(k.to_s))
             inner_tags << plist_node(v)
           end
@@ -87,11 +88,18 @@ module Plist
         when String, Symbol, Fixnum, Bignum, Integer, Float
           output << tag(element_type(element), CGI::escapeHTML(element.to_s))
         when IO, StringIO
+          element.rewind
           contents = element.read
-          output << tag('data', Base64.encode64(contents))
+          # note that apple plists are wrapped at a different length then
+          # what base
+          data = "\n"
+          Base64::encode64(contents).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
+          output << tag('data', data)
         else
           output << comment( 'The <data> element below contains a Ruby object which has been serialized with Marshal.dump.' )
-          output << tag('data', Base64.encode64(Marshal.dump(element)))
+          data = "\n"
+          Base64::encode64(Marshal.dump(element)).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
+          output << tag('data', data )
         end
       end
 
@@ -130,7 +138,7 @@ module Plist
 
       output << contents
 
-      output << '</plist>'
+      output << '</plist>' + "\n"
 
       return output
     end

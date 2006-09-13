@@ -67,7 +67,9 @@ module Plist
     TEXT       = /([^<]+)/
     XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/um
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/um
-
+    COMMENT_START = /\A<!--/u
+    COMMENT_END = /.*?-->/um
+      
 
     def parse
       plist_tags = PTag::mappings.keys.join('|')
@@ -84,12 +86,11 @@ module Plist
         end
       )
       
-      # FIXME - temporarily strip out comments until I (ben) can figure out how to make the scanner ignore them
-      contents.gsub!(/<!--.*?-->/, '')
-      
       @scanner = StringScanner.new( contents )
       until @scanner.eos?
-        if @scanner.scan(XMLDECL_PATTERN)
+        if @scanner.scan(COMMENT_START)
+          @scanner.scan(COMMENT_END)
+        elsif @scanner.scan(XMLDECL_PATTERN)
         elsif @scanner.scan(DOCTYPE_PATTERN)
         elsif @scanner.scan(start_tag)
           @listener.tag_start(@scanner[1], nil)
@@ -133,7 +134,7 @@ module Plist
 
   class PList < PTag
     def to_ruby
-      children.first.to_ruby
+      children.first.to_ruby if children.first
     end
   end
 

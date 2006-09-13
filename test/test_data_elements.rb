@@ -23,8 +23,9 @@ class TestDataElements < Test::Unit::TestCase
   def test_marshal
     expected = <<END
 <!-- The <data> element below contains a Ruby object which has been serialized with Marshal.dump. -->
-<data>BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdh
-cyBtYXJzaGFsZWQ=
+<data>
+BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdhcyBtYXJz
+aGFsZWQ=
 </data>
 END
   
@@ -39,9 +40,9 @@ END
   
   def test_generator_io_and_file
     expected = <<END
-<data>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAA==
+<data>
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
 </data>
 END
 
@@ -71,7 +72,8 @@ END
 
   def test_generator_string_io
     expected = <<END
-<data>dGhpcyBpcyBhIHN0cmluZ2lvIG9iamVjdA==
+<data>
+dGhpcyBpcyBhIHN0cmluZ2lvIG9iamVjdA==
 </data>
 END
 
@@ -89,21 +91,29 @@ END
   # who discovered the plist with the data tag
   # supplied the test data, and provided the parsing code.
   def test_data
+    # test reading plist <data> elements
     data = Plist::parse_xml("test/assets/example_data.plist");
     assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
 
-#    these do not test the parser, they test the generator.  Commenting for now; test coverage
-#    for this functionality will be in the new generator code.
+    # these do not test the parser, they test the generator.  Commenting for now; test coverage
+    # for this functionality will be in the new generator code.
     #
     #  No longer commented, but failing.
 
-    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
+    # test writing data elements
+    expected = File.read("test/assets/example_data.plist")
+    result   = data.to_plist
+    File.open('result.plist', 'w') {|f|f.write(result)}
+    assert_equal( expected, result )
 
-    data['image'] = StringIO.new( File.open("test/assets/example_data.jpg"){ |f| f.read } )
-    File.open('temp.plist', 'w'){|f| f.write data.to_plist }
-    assert_equal( File.open("test/assets/example_data.plist"){|f| f.read }, data.to_plist )
-
-    File.delete('temp.plist') if File.exists?('temp.plist')
+    # Test changing the <data> object in the plist to a StringIO and writing.
+    # This appears extraneous given that plist currently returns a StringIO,
+    # so the above writing test also flexes StringIO#to_plist_node.
+    # However, the interface promise is to return an IO, not a particular class.
+    # plist used to return Tempfiles, which was changed solely for performance reasons.
+    data['image'] = StringIO.new( File.read("test/assets/example_data.jpg"))
+    
+    assert_equal(expected, data.to_plist )
 
   end
   
