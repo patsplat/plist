@@ -24,12 +24,15 @@ END
   def test_hash
     expected = <<END
 <dict>
+	<key>abc</key>
+	<integer>123</integer>
 	<key>foo</key>
 	<string>bar</string>
 </dict>
 END
-    # only one element because we can't predict what order the keys will come out in.  Sigh.
-    assert_equal expected, {:foo => :bar}.to_plist(false)
+    # thanks to recent changes in the generator code, hash keys are sorted before emission,
+    # so multi-element hash tests should be reliable.  We're testing that here too.
+    assert_equal expected, {:foo => :bar, :abc => 123}.to_plist(false)
   end
 
   def test_hash_with_array_element
