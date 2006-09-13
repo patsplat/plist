@@ -65,7 +65,7 @@ module Plist
         case element
         when Array
           output << tag('array') {
-            element.collect {|e| plist_node(e)}.join
+            element.collect {|e| plist_node(e)}
           }
         when Hash
           inner_tags = []
@@ -76,10 +76,10 @@ module Plist
           end
 
           output << tag('dict') {
-            inner_tags.join
+            inner_tags
           }
         when true, false
-          output << "<#{element}/>"
+          output << "<#{element}/>\n"
         when Time
           output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
         when Date # also catches DateTime
@@ -99,27 +99,40 @@ module Plist
     end
     
     def self.comment(content)
-      return "<!-- #{content} -->"
+      return "<!-- #{content} -->\n"
     end
 
     def self.tag(type, contents = '', &block)
-      contents << block.call if block_given?
+      out = nil
 
-      return "<#{type}>#{contents.to_s}</#{type}>"
+      if block_given?
+        out = IndentedString.new
+        out << "<#{type}>"
+        out.raise_indent
+
+        out << block.call
+
+        out.lower_indent
+        out << "</#{type}>"
+      else
+        out = "<#{type}>#{contents.to_s}</#{type}>\n"
+      end
+      
+      return out.to_s
     end
 
-    def self.wrap(string)
-      output = []
+    def self.wrap(contents)
+      output = ''
 
-      output << '<?xml version="1.0" encoding="UTF-8"?>'
-      output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
-      output << '<plist version="1.0">'
+      output << '<?xml version="1.0" encoding="UTF-8"?>' + "\n"
+      output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' + "\n"
+      output << '<plist version="1.0">' + "\n"
 
-      output << string
+      output << contents
 
       output << '</plist>'
 
-      return output.join
+      return output
     end
 
     def self.element_type(item)
@@ -129,6 +142,50 @@ module Plist
         when Float:                   'real'
         else
           raise "Don't know about this data type... something must be wrong!"
+      end
+    end
+  end
+  
+  private
+  class IndentedString
+    attr_accessor :indent_string
+    
+    @@indent_level = 0
+
+    def initialize(str = "\t")
+      @indent_string = str
+      @contents = ''
+    end
+
+    def to_s
+      return @contents
+    end
+    
+    def raise_indent
+      @@indent_level += 1
+    end
+    
+    def lower_indent
+      @@indent_level -= 1 if @@indent_level > 0
+    end
+
+    def <<(val)
+      if val.is_a? Array
+        val.each do |f|
+          self << f
+        end
+      else
+        # if it's already indented, don't bother indenting further
+        unless val =~ /\A#{@indent_string}/
+          indent = @indent_string * @@indent_level
+          
+          @contents << val.gsub(/^/, indent)
+        else
+          @contents << val
+        end
+        
+        # it already has a newline, don't add another
+        @contents << "\n" unless val =~ /\n$/
       end
     end
   end

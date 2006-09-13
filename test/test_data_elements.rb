@@ -22,14 +22,15 @@ class TestDataElements < Test::Unit::TestCase
 
   def test_marshal
     expected = <<END
-<!-- The <data> element below contains a Ruby object which has been serialized with Marshal.dump. --><data>BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdh
+<!-- The <data> element below contains a Ruby object which has been serialized with Marshal.dump. -->
+<data>BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdh
 cyBtYXJzaGFsZWQ=
 </data>
 END
   
     mo = MarshalableObject.new('this object was marshaled')
 
-    assert_equal expected.chomp, Plist::Emit.dump(mo, false)
+    assert_equal expected.chomp, Plist::Emit.dump(mo, false).chomp
     
     assert_instance_of MarshalableObject, @@result['marshal']
     
@@ -52,8 +53,8 @@ END
     # File is a subclass of IO, so catching IO in the dispatcher should work for File as well...
     f = File.open('test/assets/example_data.bin')
     
-    assert_equal expected, Plist::Emit.dump(io, false)
-    assert_equal expected, Plist::Emit.dump(f, false)
+    assert_equal expected, Plist::Emit.dump(io, false).chomp
+    assert_equal expected, Plist::Emit.dump(f, false).chomp
     
     assert_instance_of StringIO, @@result['io']
     assert_instance_of StringIO, @@result['file']
@@ -76,7 +77,7 @@ END
 
     sio = StringIO.new('this is a stringio object')
     
-    assert_equal expected.chomp, Plist::Emit.dump(sio, false)
+    assert_equal expected.chomp, Plist::Emit.dump(sio, false).chomp
     
     assert_instance_of StringIO, @@result['stringio']
     
