@@ -64,21 +64,29 @@ module Plist
       else
         case element
         when Array
-          output << tag('array') {
-            element.collect {|e| plist_node(e)}
-          }
-        when Hash
-          inner_tags = []
-
-          element.keys.sort.each do |k|
-            v = element[k]
-            inner_tags << tag('key', CGI::escapeHTML(k.to_s))
-            inner_tags << plist_node(v)
+          if element.empty?
+            output << "<array/>\n"
+          else
+            output << tag('array') {
+              element.collect {|e| plist_node(e)}
+            }
           end
+        when Hash
+          if element.empty?
+            output << "<dict/>\n"
+          else
+            inner_tags = []
 
-          output << tag('dict') {
-            inner_tags
-          }
+            element.keys.sort.each do |k|
+              v = element[k]
+              inner_tags << tag('key', CGI::escapeHTML(k.to_s))
+              inner_tags << plist_node(v)
+            end
+
+            output << tag('dict') {
+              inner_tags
+            }
+          end
         when true, false
           output << "<#{element}/>\n"
         when Time
