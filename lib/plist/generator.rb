@@ -1,10 +1,10 @@
-##############################################################
+#--###########################################################
 # Copyright 2006, Ben Bleything <ben@bleything.net> and      #
 # Patrick May <patrick@hexane.org>                           #
 #                                                            #
 # Distributed under the MIT license.                         #
 ##############################################################
-#
+#++
 # See Plist::Emit.
 module Plist
   # === Create a plist
