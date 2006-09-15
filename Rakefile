@@ -29,7 +29,7 @@ RELEASE_NAME  = "REL #{PKG_VERSION}"
 RUBYFORGE_PROJECT = "plist"
 RUBYFORGE_USER    = ENV['RUBYFORGE_USER']
 
-TEST_FILES    = Dir.glob('test/**/*').delete_if {|item| item.include?( "\.svn" ) }
+TEST_FILES    = Dir.glob('test/**/*').delete_if {|item| item.include?( "\.svn" ) }.delete_if{|item| item.include?( "assets" ) }
 RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE" ] + TEST_FILES + Dir.glob( "lib/*" ).delete_if { |item| item.include?( "\.svn" ) }
 
 task :default => [ :test ]
