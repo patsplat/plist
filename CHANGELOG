@@ -1,7 +1,10 @@
 = plist - All-purpose Property List manipulation library
 
-2006-09-18 (r70 - r71):
-* Update this file ;)
+2006-09-18 (r70 - r72):
+ * Update this file ;)
+ * Fix Rakefile
+   * gem install -t now works correctly
+   * Remove super-sekr1t rdoc staging area from rdoc publishing task
 
 2006-09-15 (r64 - r69):
 * Change behavior of empty collection elements to match What Apple Does

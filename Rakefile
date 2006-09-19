@@ -29,8 +29,9 @@ RELEASE_NAME  = "REL #{PKG_VERSION}"
 RUBYFORGE_PROJECT = "plist"
 RUBYFORGE_USER    = ENV['RUBYFORGE_USER']
 
-TEST_FILES    = Dir.glob('test/**/*').delete_if {|item| item.include?( "\.svn" ) }.delete_if{|item| item.include?( "assets" ) }
-RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE", "docs/USAGE" ] + TEST_FILES + Dir.glob( "lib/**/*" ).delete_if { |item| item.include?( "\.svn" ) }
+TEST_FILES    = Dir.glob('test/test_*').delete_if { |item| item.include?( "\.svn" ) }
+LIB_FILES     = Dir.glob('lib/**/*').delete_if { |item| item.include?( "\.svn" ) }
+RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE", "docs/USAGE" ] + LIB_FILES + TEST_FILES
 
 task :default => [ :test ]
 # Run the unit tests
@@ -98,7 +99,7 @@ end
 
 desc "Copy documentation to rubyforge"
 task :update_rdoc => [ :rdoc ] do
-  Rake::SshDirPublisher.new("#{RUBYFORGE_USER}@rubyforge.org", "/var/www/gforge-projects/#{RUBYFORGE_PROJECT}/sekr1t", "rdoc").upload
+  Rake::SshDirPublisher.new("#{RUBYFORGE_USER}@rubyforge.org", "/var/www/gforge-projects/#{RUBYFORGE_PROJECT}", "rdoc").upload
 end
 
 # Genereate the RDoc documentation
