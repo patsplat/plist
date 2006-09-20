@@ -1,5 +1,8 @@
 = plist - All-purpose Property List manipulation library
 
+2006-09-19 (r73):
+ * Really fix the rakefile this time (apparently I deleted some code that I needed...)
+
 2006-09-18 (r70 - r72):
  * Update this file ;)
  * Fix Rakefile
