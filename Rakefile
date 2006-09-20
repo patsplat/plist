@@ -61,7 +61,7 @@ end
 
 desc "Strip trailing whitespace and fix newlines for all release files"
 task :fix_whitespace => [ :clean ] do
-  RELEASE_FILES.each do |filename|
+  RELEASE_FILES.reject {|i| i =~ /assets/}.each do |filename|
     next if File.directory? filename
 
     File.open(filename) do |file|
