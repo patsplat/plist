@@ -69,7 +69,7 @@ module Plist
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/um
     COMMENT_START = /\A<!--/u
     COMMENT_END = /.*?-->/um
-      
+
 
     def parse
       plist_tags = PTag::mappings.keys.join('|')
@@ -77,7 +77,7 @@ module Plist
       end_tag    = /<\/(#{plist_tags})[^>]*>/i
 
       require 'strscan'
-      
+
       contents = (
         if (File.exists? @filename_or_xml)
           File.open(@filename_or_xml) {|f| f.read}
@@ -85,7 +85,7 @@ module Plist
           @filename_or_xml
         end
       )
-      
+
       @scanner = StringScanner.new( contents )
       until @scanner.eos?
         if @scanner.scan(COMMENT_START)

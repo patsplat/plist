@@ -19,10 +19,10 @@ class TestGeneratorBasicTypes < Test::Unit::TestCase
     assert_equal expected, Plist::Emit.dump('testdata', false).chomp
     assert_equal expected, Plist::Emit.dump(:testdata, false).chomp
   end
-  
+
   def test_strings_with_escaping
     expected = wrap('string', "&lt;Fish &amp; Chips&gt;")
-    
+
     assert_equal expected, Plist::Emit.dump('<Fish & Chips>', false).chomp
   end
 

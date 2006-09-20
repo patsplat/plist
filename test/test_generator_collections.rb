@@ -20,12 +20,12 @@ END
 
     assert_equal expected, [1,2,3].to_plist(false)
   end
-  
+
   def test_empty_array
     expected = <<END
 <array/>
 END
-    
+
     assert_equal expected, [].to_plist(false)
   end
 
@@ -42,7 +42,7 @@ END
     # so multi-element hash tests should be reliable.  We're testing that here too.
     assert_equal expected, {:foo => :bar, :abc => 123}.to_plist(false)
   end
-  
+
   def test_empty_hash
     expected = <<END
 <dict/>

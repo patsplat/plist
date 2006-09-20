@@ -9,11 +9,11 @@
 module Plist
   # === Create a plist
   # You can dump an object to a plist in one of two ways:
-  # 
+  #
   # * <tt>Plist::Emit.dump(obj)</tt>
   # * <tt>obj.to_plist</tt>
   #   * This requires that you mixin the <tt>Plist::Emit</tt> module, which is already done for +Array+ and +Hash+.
-  # 
+  #
   # The following Ruby classes are converted into native plist types:
   #   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time, true, false
   # * +Array+ and +Hash+ are both recursive; their elements will be converted into plist nodes inside the <array> and <dict> containers (respectively).
@@ -26,7 +26,7 @@ module Plist
     def to_plist(envelope = true)
       return Plist::Emit.dump(self, envelope)
     end
-    
+
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.save_plist</tt> with +self+.
     def save_plist(filename)
       Plist::Emit.save_plist(self, filename)
@@ -47,7 +47,7 @@ module Plist
 
       return output
     end
-    
+
     # Writes the serialized object's plist to the specified filename.
     def self.save_plist(obj, filename)
       File.open(filename, 'wb') do |f|
@@ -58,7 +58,7 @@ module Plist
     private
     def self.plist_node(element)
       output = ''
-      
+
       if element.respond_to? :to_plist_node
         output << element.to_plist_node
       else
@@ -115,7 +115,7 @@ module Plist
 
       return output
     end
-    
+
     def self.comment(content)
       return "<!-- #{content} -->\n"
     end
@@ -135,7 +135,7 @@ module Plist
       else
         out = "<#{type}>#{contents.to_s}</#{type}>\n"
       end
-      
+
       return out.to_s
     end
 
@@ -163,11 +163,11 @@ module Plist
       end
     end
   end
-  
+
   private
   class IndentedString
     attr_accessor :indent_string
-    
+
     @@indent_level = 0
 
     def initialize(str = "\t")
@@ -178,11 +178,11 @@ module Plist
     def to_s
       return @contents
     end
-    
+
     def raise_indent
       @@indent_level += 1
     end
-    
+
     def lower_indent
       @@indent_level -= 1 if @@indent_level > 0
     end
@@ -196,12 +196,12 @@ module Plist
         # if it's already indented, don't bother indenting further
         unless val =~ /\A#{@indent_string}/
           indent = @indent_string * @@indent_level
-          
+
           @contents << val.gsub(/^/, indent)
         else
           @contents << val
         end
-        
+
         # it already has a newline, don't add another
         @contents << "\n" unless val =~ /\n$/
       end

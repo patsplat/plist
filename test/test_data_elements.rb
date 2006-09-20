@@ -28,16 +28,16 @@ BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdhcyBtYXJz
 aGFsZWQ=
 </data>
 END
-  
+
     mo = MarshalableObject.new('this object was marshaled')
 
     assert_equal expected.chomp, Plist::Emit.dump(mo, false).chomp
-    
+
     assert_instance_of MarshalableObject, @@result['marshal']
-    
+
     assert_equal mo.foo, @@result['marshal'].foo
   end
-  
+
   def test_generator_io_and_file
     expected = <<END
 <data>
@@ -50,13 +50,13 @@ END
 
     fd = IO.sysopen('test/assets/example_data.bin')
     io = IO.open(fd, 'r')
-    
+
     # File is a subclass of IO, so catching IO in the dispatcher should work for File as well...
     f = File.open('test/assets/example_data.bin')
-    
+
     assert_equal expected, Plist::Emit.dump(io, false).chomp
     assert_equal expected, Plist::Emit.dump(f, false).chomp
-    
+
     assert_instance_of StringIO, @@result['io']
     assert_instance_of StringIO, @@result['file']
 
@@ -78,11 +78,11 @@ dGhpcyBpcyBhIHN0cmluZ2lvIG9iamVjdA==
 END
 
     sio = StringIO.new('this is a stringio object')
-    
+
     assert_equal expected.chomp, Plist::Emit.dump(sio, false).chomp
-    
+
     assert_instance_of StringIO, @@result['stringio']
-    
+
     sio.rewind
     assert_equal sio.read, @@result['stringio'].read
   end
@@ -107,9 +107,9 @@ END
     # However, the interface promise is to return an IO, not a particular class.
     # plist used to return Tempfiles, which was changed solely for performance reasons.
     data['image'] = StringIO.new( File.read("test/assets/example_data.jpg"))
-    
+
     assert_equal(expected, data.to_plist )
 
   end
-  
+
 end
