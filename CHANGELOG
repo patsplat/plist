@@ -1,7 +1,10 @@
 = plist - All-purpose Property List manipulation library
 
-2006-09-20 (r76):
+=== Release version 3.0.0!
+
+2006-09-20 (r77 - r79):
  * move IndentedString inside Plist::Emit and :nodoc: it
+ * Tag 3.0.0! (from rev 78)
 
 2006-09-19 (r73 - r75):
  * Really fix the rakefile this time (apparently I deleted some code that I needed...)
