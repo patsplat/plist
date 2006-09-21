@@ -162,48 +162,47 @@ module Plist
           raise "Don't know about this data type... something must be wrong!"
       end
     end
-  end
+    private
+    class IndentedString #:nodoc:
+      attr_accessor :indent_string
 
-  private
-  class IndentedString
-    attr_accessor :indent_string
+      @@indent_level = 0
 
-    @@indent_level = 0
+      def initialize(str = "\t")
+        @indent_string = str
+        @contents = ''
+      end
 
-    def initialize(str = "\t")
-      @indent_string = str
-      @contents = ''
-    end
+      def to_s
+        return @contents
+      end
 
-    def to_s
-      return @contents
-    end
+      def raise_indent
+        @@indent_level += 1
+      end
 
-    def raise_indent
-      @@indent_level += 1
-    end
+      def lower_indent
+        @@indent_level -= 1 if @@indent_level > 0
+      end
 
-    def lower_indent
-      @@indent_level -= 1 if @@indent_level > 0
-    end
-
-    def <<(val)
-      if val.is_a? Array
-        val.each do |f|
-          self << f
-        end
-      else
-        # if it's already indented, don't bother indenting further
-        unless val =~ /\A#{@indent_string}/
-          indent = @indent_string * @@indent_level
-
-          @contents << val.gsub(/^/, indent)
+      def <<(val)
+        if val.is_a? Array
+          val.each do |f|
+            self << f
+          end
         else
-          @contents << val
-        end
+          # if it's already indented, don't bother indenting further
+          unless val =~ /\A#{@indent_string}/
+            indent = @indent_string * @@indent_level
 
-        # it already has a newline, don't add another
-        @contents << "\n" unless val =~ /\n$/
+            @contents << val.gsub(/^/, indent)
+          else
+            @contents << val
+          end
+
+          # it already has a newline, don't add another
+          @contents << "\n" unless val =~ /\n$/
+        end
       end
     end
   end

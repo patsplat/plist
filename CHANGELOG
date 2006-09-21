@@ -1,5 +1,8 @@
 = plist - All-purpose Property List manipulation library
 
+2006-09-20 (r76):
+ * move IndentedString inside Plist::Emit and :nodoc: it
+
 2006-09-19 (r73 - r75):
  * Really fix the rakefile this time (apparently I deleted some code that I needed...)
  * alter the fix_whitespace rake task to ignore the assets directory
