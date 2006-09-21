@@ -29,8 +29,10 @@ RELEASE_NAME  = "REL #{PKG_VERSION}"
 RUBYFORGE_PROJECT = "plist"
 RUBYFORGE_USER    = ENV['RUBYFORGE_USER']
 
-TEST_FILES    = Dir.glob('test/**/*').delete_if {|item| item.include?( "\.svn" ) }
-RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE" ] + TEST_FILES + Dir.glob( "lib/*" ).delete_if { |item| item.include?( "\.svn" ) }
+TEST_FILES    = Dir.glob('test/test_*').delete_if { |item| item.include?( "\.svn" ) }
+TEST_ASSETS   = Dir.glob('test/assets/*').delete_if { |item| item.include?( "\.svn" ) }
+LIB_FILES     = Dir.glob('lib/**/*').delete_if { |item| item.include?( "\.svn" ) }
+RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE", "docs/USAGE" ] + LIB_FILES + TEST_FILES + TEST_ASSETS
 
 task :default => [ :test ]
 # Run the unit tests
