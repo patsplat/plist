@@ -1,5 +1,8 @@
 = plist - All-purpose Property List manipulation library
 
+2006-09-20 (r80):
+ * tweak a comment in generator.rb to make it clear that we're not using Base64.b64encode because it's broken.
+
 === Release version 3.0.0!
 
 2006-09-20 (r77 - r79):
