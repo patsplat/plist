@@ -22,7 +22,7 @@ end
 
 class TestGenerator < Test::Unit::TestCase
   def test_to_plist_vs_plist_emit_dump_no_envelope
-    source   = [1, :b, true]
+    source = [1, :b, true]
 
     to_plist = source.to_plist(false)
     plist_emit_dump = Plist::Emit.dump(source, false)
