@@ -85,6 +85,16 @@ class TestParser < Test::Unit::TestCase
       assert_nil( Plist::parse_xml( File.read('test/assets/commented.plist') ) )
     end
   end
+
+  def test_filename_or_xml_is_stringio
+    require 'stringio'
+
+    str = StringIO.new
+    data = Plist::parse_xml(str)
+
+    assert_nil data
+  end
+
 end
 
 __END__

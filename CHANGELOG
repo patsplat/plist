@@ -1,5 +1,8 @@
 = plist - All-purpose Property List manipulation library
 
+2007-02-22 (r81):
+ * make the plist parser accept strings contain XML or any object that responds to #read (File and StringIO being the intended targets here).  Test and idea contributed by Chuck Remes.
+
 2006-09-20 (r80):
  * tweak a comment in generator.rb to make it clear that we're not using Base64.b64encode because it's broken.
 
