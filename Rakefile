@@ -32,7 +32,7 @@ RUBYFORGE_USER    = ENV['RUBYFORGE_USER']
 TEST_FILES    = Dir.glob('test/test_*').delete_if { |item| item.include?( "\.svn" ) }
 TEST_ASSETS   = Dir.glob('test/assets/*').delete_if { |item| item.include?( "\.svn" ) }
 LIB_FILES     = Dir.glob('lib/**/*').delete_if { |item| item.include?( "\.svn" ) }
-RELEASE_FILES = [ "Rakefile", "README", "MIT-LICENSE", "docs/USAGE" ] + LIB_FILES + TEST_FILES + TEST_ASSETS
+RELEASE_FILES = [ "Rakefile", "README", "LICENSE", "docs/USAGE" ] + LIB_FILES + TEST_FILES + TEST_ASSETS
 
 task :default => [ :test ]
 # Run the unit tests
@@ -109,7 +109,7 @@ Rake::RDocTask.new { |rdoc|
   rdoc.title    = "All-purpose Property List manipulation library"
   rdoc.options << '-SNmREADME'
   rdoc.template = "docs/jamis-template.rb"
-  rdoc.rdoc_files.include('README', 'MIT-LICENSE', 'CHANGELOG')
+  rdoc.rdoc_files.include('README', 'LICENSE', 'CHANGELOG')
   rdoc.rdoc_files.include Dir.glob('docs/**').delete_if {|f| f.include? 'jamis' }
   rdoc.rdoc_files.include('lib/**')
 }
