@@ -5,6 +5,9 @@
 # Distributed under the MIT license.                         #
 ##############################################################
 #++
+
+require "plist/binary"
+
 # See Plist::Emit.
 module Plist
   # === Create a plist
@@ -23,13 +26,13 @@ module Plist
   # For detailed usage instructions, refer to USAGE[link:files/docs/USAGE.html] and the methods documented below.
   module Emit
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.dump</tt> with +self+.
-    def to_plist(envelope = true)
-      return Plist::Emit.dump(self, envelope)
+    def to_plist(envelope = true, format = :xml)
+      return Plist::Emit.dump(self, envelope, format)
     end
 
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.save_plist</tt> with +self+.
-    def save_plist(filename)
-      Plist::Emit.save_plist(self, filename)
+    def save_plist(filename, format = :xml)
+      Plist::Emit.save_plist(self, filename, format)
     end
 
     # The following Ruby classes are converted into native plist types:
@@ -40,24 +43,51 @@ module Plist
     # +IO+ and +StringIO+ objects are encoded and placed in <data> elements; other objects are <tt>Marshal.dump</tt>'ed unless they implement +to_plist_node+.
     #
     # The +envelope+ parameters dictates whether or not the resultant plist fragment is wrapped in the normal XML/plist header and footer.  Set it to false if you only want the fragment.
-    def self.dump(obj, envelope = true)
-      output = plist_node(obj)
-
-      output = wrap(output) if envelope
-
+    def self.dump(obj, envelope = true, format = :xml)
+      case format
+      when :xml
+        output = plist_node(obj)  
+        output = wrap(output) if envelope
+      when :binary
+        raise(ArgumentError, "binary plists must have an envelope") unless envelope
+        output = Plist::Binary.binary_plist(obj)
+      else
+        raise(ArgumentError, "unknown plist format `#{format}'")
+      end
       return output
     end
 
     # Writes the serialized object's plist to the specified filename.
-    def self.save_plist(obj, filename)
+    def self.save_plist(obj, filename, format = :xml)
       File.open(filename, 'wb') do |f|
-        f.write(obj.to_plist)
+        case format
+        when :xml
+          f.write(obj.to_plist(true, format))
+        when :binary
+          f.write(Plist::Binary.binary_plist(obj))
+        else
+          raise(ArgumentError, "unknown plist format `#{format}'")
+        end
       end
     end
 
     private
+
+    HTML_ESCAPE_HASH = {
+      "&" => "&amp;",
+      "\"" => "&quot;",
+      ">" => "&gt;",
+      "<" => "&lt;"
+    }
+    
+    def self.escape_html(string)
+      string.gsub(/(&|\"|>|<)/) do |mtch|
+        HTML_ESCAPE_HASH[mtch]
+      end
+    end
+    
     def self.plist_node(element)
-      output = ''
+      output = StringIO.new
 
       if element.respond_to? :to_plist_node
         output << element.to_plist_node
@@ -68,23 +98,20 @@ module Plist
             output << "<array/>\n"
           else
             output << tag('array') {
-              element.collect {|e| plist_node(e)}
+              element.collect { |e| plist_node(e) }
             }
           end
         when Hash
           if element.empty?
             output << "<dict/>\n"
           else
-            inner_tags = []
-
-            element.keys.sort.each do |k|
-              v = element[k]
-              inner_tags << tag('key', CGI::escapeHTML(k.to_s))
-              inner_tags << plist_node(v)
-            end
-
-            output << tag('dict') {
-              inner_tags
+            output << tag("dict") {
+              s = []
+              element.each { |k, v|
+                s << tag('key', Emit.escape_html(k.to_s))
+                s << plist_node(v)
+              }
+              s
             }
           end
         when true, false
@@ -94,7 +121,7 @@ module Plist
         when Date # also catches DateTime
           output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
         when String, Symbol, Fixnum, Bignum, Integer, Float
-          output << tag(element_type(element), CGI::escapeHTML(element.to_s))
+          output << tag(element_type(element), Emit.escape_html(element.to_s))
         when IO, StringIO
           element.rewind
           contents = element.read
@@ -112,35 +139,66 @@ module Plist
           output << tag('data', data )
         end
       end
-
-      return output
+      return output.string
     end
 
     def self.comment(content)
       return "<!-- #{content} -->\n"
     end
 
+    def self.indent_level
+      @indent_level ||= 0
+    end
+
+    def self.raise_indent_level
+      @indent_level = indent_level + 1
+    end
+
+    def self.lower_indent_level
+      if (ind = indent_level) > 0
+        @indent_level = ind - 1
+      end
+    end
+
+    def self.append_indented_to_io(io_object, obj)
+      if obj.is_a?(Array)
+        obj.each do |o|
+          append_indented_to_io(io_object, o)
+        end
+      else
+        unless obj.index("\t") == 0
+          indent = "\t" * indent_level
+          io_object << "#{indent}#{obj}"
+        else
+          io_object << obj
+        end
+        last = obj.length - 1
+        io_object << "\n" unless obj[last .. last] == "\n"
+      end
+    end
+
     def self.tag(type, contents = '', &block)
       out = nil
-
       if block_given?
-        out = IndentedString.new
-        out << "<#{type}>"
-        out.raise_indent
 
-        out << block.call
+        sio = StringIO.new
+        append_indented_to_io(sio, "<#{type}>")
+        raise_indent_level
 
-        out.lower_indent
-        out << "</#{type}>"
+        append_indented_to_io(sio, block.call)
+        
+        lower_indent_level
+        append_indented_to_io(sio, "</#{type}>")
+        out = sio.string
+
       else
         out = "<#{type}>#{contents.to_s}</#{type}>\n"
       end
-
       return out.to_s
     end
 
     def self.wrap(contents)
-      output = ''
+      output = StringIO.new
 
       output << '<?xml version="1.0" encoding="UTF-8"?>' + "\n"
       output << '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' + "\n"
@@ -149,8 +207,8 @@ module Plist
       output << contents
 
       output << '</plist>' + "\n"
-
-      return output
+      
+      output.string
     end
 
     def self.element_type(item)
@@ -162,49 +220,7 @@ module Plist
           raise "Don't know about this data type... something must be wrong!"
       end
     end
-    private
-    class IndentedString #:nodoc:
-      attr_accessor :indent_string
 
-      @@indent_level = 0
-
-      def initialize(str = "\t")
-        @indent_string = str
-        @contents = ''
-      end
-
-      def to_s
-        return @contents
-      end
-
-      def raise_indent
-        @@indent_level += 1
-      end
-
-      def lower_indent
-        @@indent_level -= 1 if @@indent_level > 0
-      end
-
-      def <<(val)
-        if val.is_a? Array
-          val.each do |f|
-            self << f
-          end
-        else
-          # if it's already indented, don't bother indenting further
-          unless val =~ /\A#{@indent_string}/
-            indent = @indent_string * @@indent_level
-
-            @contents << val.gsub(/^/, indent)
-          else
-            @contents << val
-          end
-
-          # it already has a newline, don't add another
-          @contents << "\n" unless val =~ /\n$/
-        end
-      end
-    end
   end
 end
 
