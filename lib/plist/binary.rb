@@ -310,15 +310,15 @@ module Plist
         raise(ArgumentError, "negative integers require 8 or 16 bytes of storage")
       end
       case num_bytes
-      when 1:
+      when 1
         [i].pack("c")
-      when 2:
+      when 2
         [i].pack("n")
-      when 4:
+      when 4
         [i].pack("N")
-      when 8:
+      when 8
         [(i >> 32) & 0xffffffff, i & 0xffffffff].pack("NN")
-      when 16:
+      when 16
         [i >> 96, (i >> 64) & 0xffffffff, (i >> 32) & 0xffffffff,
           i & 0xffffffff].pack("NNNN")
       else
