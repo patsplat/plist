@@ -29,6 +29,15 @@ module Plist
     parser.parse
     listener.result
   end
+  
+  # Parses and yields the plist as a hash, and
+  # commits changes back to the original file (destructive)
+  def self.modify(path, &block)
+    if plist = Plist::parse_xml(path)
+      yield plist if block_given?
+      Plist::Emit.save_plist(plist, path)
+    end
+  end
 
   class Listener
     #include REXML::StreamListener
