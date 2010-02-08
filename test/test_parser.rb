@@ -91,7 +91,26 @@ class TestParser < Test::Unit::TestCase
 
     assert_nil data
   end
+end
 
+class TestDirectModification < Test::Unit::TestCase
+  
+  def setup
+    test_file = File.expand_path("assets/AlbumData.xml", File.dirname(__FILE__))
+    FileUtils.cp(test_file, 'modificationtest.plist')
+  end
+  
+  def teardown
+    FileUtils.rm('modificationtest.plist')
+  end
+  
+  def test_plist_modification_with_block
+    Plist.modify('modificationtest.plist') do |plist|
+      plist['Application Version'] = '10.1.2'
+    end
+    assert_equal '10.1.2', Plist.parse_xml('modificationtest.plist')['Application Version']
+  end
+  
 end
 
 __END__
