@@ -1,10 +1,11 @@
-#--###########################################################
-# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
-# Patrick May <patrick@hexane.org>                           #
-#                                                            #
-# Distributed under the MIT license.                         #
-##############################################################
-#++
+#!/usr/bin/env ruby
+#
+# = plist
+#
+# Copyright 2006-2010 Ben Bleything and Patrick May
+# Distributed under the MIT License
+#
+
 # Plist parses Mac OS X xml property list files into ruby data structures.
 #
 # === Load a plist file

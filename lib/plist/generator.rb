@@ -1,11 +1,10 @@
-#--###########################################################
-# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
-# Patrick May <patrick@hexane.org>                           #
-#                                                            #
-# Distributed under the MIT license.                         #
-##############################################################
-#++
-# See Plist::Emit.
+#!/usr/bin/env ruby
+#
+# = plist
+#
+# Copyright 2006-2010 Ben Bleything and Patrick May
+# Distributed under the MIT License
+#
 
 module Plist ; end
 

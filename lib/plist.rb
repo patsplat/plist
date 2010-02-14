@@ -1,14 +1,13 @@
-#--
-##############################################################
-# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
-# Patrick May <patrick@hexane.org>                           #
-#                                                            #
-# Distributed under the MIT license.                         #
-##############################################################
-#++
-# = Plist
+#!/usr/bin/env ruby
 #
-# This is the main file for plist.  Everything interesting happens in Plist and Plist::Emit.
+# = plist
+#
+# This is the main file for plist. Everything interesting happens in
+# Plist and Plist::Emit.
+#
+# Copyright 2006-2010 Ben Bleything and Patrick May
+# Distributed under the MIT License
+#
 
 require 'base64'
 require 'cgi'

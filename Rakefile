@@ -1,12 +1,12 @@
-##############################################################
-# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
-#                 Patrick May <patrick@hexane.org>           #
-#                                                            #
-# Based heavily on Geoffrey Grosenbach's Rakefile for gruff. #
-# Includes whitespace-fixing task based on code from Typo.   #
-#                                                            #
-# Distributed under the MIT license.                         #
-##############################################################
+#
+# Plist Rakefile
+#
+# Based heavily on Geoffrey Grosenbach's Rakefile for gruff.
+# Includes whitespace-fixing task based on code from Typo.
+#
+# Copyright 2006-2010 Ben Bleything and Patrick May
+# Distributed under the MIT License
+#
 
 require 'fileutils'
 require 'rubygems'

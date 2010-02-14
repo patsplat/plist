@@ -1,12 +1,6 @@
-##############################################################
-# Copyright 2006, Ben Bleything <ben@bleything.net> and      #
-#                 Patrick May <patrick@hexane.org>           #
-#                                                            #
-# Distributed under the MIT license.                         #
-##############################################################
+#!/usr/bin/env ruby
 
 require 'test/unit'
-
 require 'plist'
 
 class TestParser < Test::Unit::TestCase
