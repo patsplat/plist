@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'test/unit'
+require 'fileutils'
 require 'plist'
 
 class TestParser < Test::Unit::TestCase
