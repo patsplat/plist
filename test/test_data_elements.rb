@@ -13,7 +13,10 @@ class MarshalableObject
 end
 
 class TestDataElements < Test::Unit::TestCase
-  @@result = Plist::parse_xml('test/assets/test_data_elements.plist')
+
+  def setup
+    @result = Plist.parse_xml( 'test/assets/test_data_elements.plist' )
+  end
 
   def test_marshal
     expected = <<END
@@ -28,9 +31,9 @@ END
 
     assert_equal expected.chomp, Plist::Emit.dump(mo, false).chomp
 
-    assert_instance_of MarshalableObject, @@result['marshal']
+    assert_instance_of MarshalableObject, @result['marshal']
 
-    assert_equal mo.foo, @@result['marshal'].foo
+    assert_equal mo.foo, @result['marshal'].foo
   end
 
   def test_generator_io_and_file
@@ -52,14 +55,14 @@ END
     assert_equal expected, Plist::Emit.dump(io, false).chomp
     assert_equal expected, Plist::Emit.dump(f, false).chomp
 
-    assert_instance_of StringIO, @@result['io']
-    assert_instance_of StringIO, @@result['file']
+    assert_instance_of StringIO, @result['io']
+    assert_instance_of StringIO, @result['file']
 
     io.rewind
     f.rewind
 
-    assert_equal io.read, @@result['io'].read
-    assert_equal f.read,  @@result['file'].read
+    assert_equal io.read, @result['io'].read
+    assert_equal f.read,  @result['file'].read
 
     io.close
     f.close
@@ -76,10 +79,10 @@ END
 
     assert_equal expected.chomp, Plist::Emit.dump(sio, false).chomp
 
-    assert_instance_of StringIO, @@result['stringio']
+    assert_instance_of StringIO, @result['stringio']
 
     sio.rewind
-    assert_equal sio.read, @@result['stringio'].read
+    assert_equal sio.read, @result['stringio'].read
   end
 
   # this functionality is credited to Mat Schaffer,

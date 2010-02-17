@@ -167,11 +167,10 @@ module Plist::Emit
   class IndentedString #:nodoc:
     attr_accessor :indent_string
 
-    @@indent_level = 0
-
     def initialize(str = "\t")
       @indent_string = str
       @contents = ''
+      @indent_level = 0
     end
 
     def to_s
@@ -179,11 +178,11 @@ module Plist::Emit
     end
 
     def raise_indent
-      @@indent_level += 1
+      @indent_level += 1
     end
 
     def lower_indent
-      @@indent_level -= 1 if @@indent_level > 0
+      @indent_level -= 1 if @indent_level > 0
     end
 
     def <<(val)
@@ -194,7 +193,7 @@ module Plist::Emit
       else
         # if it's already indented, don't bother indenting further
         unless val =~ /\A#{@indent_string}/
-          indent = @indent_string * @@indent_level
+          indent = @indent_string * @indent_level
 
           @contents << val.gsub(/^/, indent)
         else
