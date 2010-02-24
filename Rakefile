@@ -32,7 +32,7 @@ RUBYFORGE_USER    = ENV['RUBYFORGE_USER']
 TEST_FILES    = Dir.glob('test/test_*')
 TEST_ASSETS   = Dir.glob('test/assets/*')
 LIB_FILES     = Dir.glob('lib/**/*')
-RELEASE_FILES = [ "Rakefile", "README.rdoc", "LICENSE" ] + LIB_FILES + TEST_FILES + TEST_ASSETS
+RELEASE_FILES = [ "Rakefile", "README.rdoc", "CHANGELOG", "LICENSE" ] + LIB_FILES + TEST_FILES + TEST_ASSETS
 
 task :default => [ :test ]
 # Run the unit tests
