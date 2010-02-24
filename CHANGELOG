@@ -1,5 +1,23 @@
 = plist - All-purpose Property List manipulation library
 
+=== Release version 3.0.0!
+
+2010-02-23:
+ * Ruby 1.9.x compatibility!
+
+2010-02-16:
+ * excise a bunch of unnecessary @@ variables
+ * fix up some tests for cross-version compatibility
+
+2010-02-14:
+ * generalized cleanup:
+   * fix old file headers
+   * modernize rakefile
+   * clean up rdoc
+
+2010-01-08:
+ * move from RubyForge Subversion to GitHub
+
 2007-02-22 (r81):
  * make the plist parser accept strings contain XML or any object that responds to #read (File and StringIO being the intended targets here).  Test and idea contributed by Chuck Remes.
 
