@@ -18,7 +18,7 @@ class TestDataElements < Test::Unit::TestCase
     @result = Plist.parse_xml( 'test/assets/test_data_elements.plist' )
   end
 
-  def test_marshal
+  def test_data_object_header
     expected = <<END
 <!-- The <data> element below contains a Ruby object which has been serialized with Marshal.dump. -->
 <data>
@@ -26,14 +26,25 @@ BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdhcyBtYXJz
 aGFsZWQ=
 </data>
 END
+    expected_elements = expected.chomp.split( "\n" )
 
-    mo = MarshalableObject.new('this object was marshaled')
+    actual = Plist::Emit.dump( Object.new, false )
+    actual_elements = actual.chomp.split( "\n" )
 
-    assert_equal expected.chomp, Plist::Emit.dump(mo, false).chomp
+    # check for header
+    assert_equal expected_elements.shift, actual_elements.shift
 
-    assert_instance_of MarshalableObject, @result['marshal']
+    # check for opening and closing data tags
+    assert_equal expected_elements.shift, actual_elements.shift
+    assert_equal expected_elements.pop, actual_elements.pop
+  end
 
-    assert_equal mo.foo, @result['marshal'].foo
+  def test_marshal_round_trip
+    expected = MarshalableObject.new('this object was marshaled')
+    actual   = Plist.parse_xml( Plist::Emit.dump(expected, false) )
+
+    assert_kind_of expected.class, actual
+    assert_equal expected.foo, actual.foo
   end
 
   def test_generator_io_and_file

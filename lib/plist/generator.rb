@@ -155,12 +155,18 @@ module Plist::Emit
   end
 
   def self.element_type(item)
-    return case item
-      when String, Symbol:          'string'
-      when Fixnum, Bignum, Integer: 'integer'
-      when Float:                   'real'
-      else
-        raise "Don't know about this data type... something must be wrong!"
+    case item
+    when String, Symbol
+      'string'
+
+    when Fixnum, Bignum, Integer
+      'integer'
+
+    when Float
+      'real'
+
+    else
+      raise "Don't know about this data type... something must be wrong!"
     end
   end
   private

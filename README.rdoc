@@ -125,6 +125,7 @@ Other folks who have helped along the way:
 [<b>Chuck Remes</b>] who pushed Patrick towards implementing <tt>#to_plist</tt>
 [<b>Mat Schaffer</b>] who supplied code and test cases for <tt><data></tt> elements
 [<b>Michael Granger</b>] for encouragement and help
+[<b>Carsten Bormann, Chris Hoffman, Dana Contreras, Hongli Lai, Johan Sørensen</b>] for contributing Ruby 1.9.x compatibility fixes
 
 == License and Copyright
 
