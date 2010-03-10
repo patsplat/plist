@@ -1,5 +1,3 @@
-= plist - All-purpose Property List manipulation library
-
 === Release version 3.0.0!
 
 2010-02-23:
