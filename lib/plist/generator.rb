@@ -16,7 +16,7 @@ module Plist ; end
 #   * This requires that you mixin the <tt>Plist::Emit</tt> module, which is already done for +Array+ and +Hash+.
 #
 # The following Ruby classes are converted into native plist types:
-#   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time, true, false
+#   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time, true, false, nil
 # * +Array+ and +Hash+ are both recursive; their elements will be converted into plist nodes inside the <array> and <dict> containers (respectively).
 # * +IO+ (and its descendants) and +StringIO+ objects are read from and their contents placed in a <data> element.
 # * User classes may implement +to_plist_node+ to dictate how they should be serialized; otherwise the object will be passed to <tt>Marshal.dump</tt> and the result placed in a <data> element.
@@ -34,7 +34,7 @@ module Plist::Emit
   end
 
   # The following Ruby classes are converted into native plist types:
-  #   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time
+  #   Array, Bignum, Date, DateTime, Fixnum, Float, Hash, Integer, String, Symbol, Time, true, false, nil
   #
   # Write us (via RubyForge) if you think another class can be coerced safely into one of the expected plist classes.
   #
@@ -80,8 +80,10 @@ module Plist::Emit
 
           element.keys.sort.each do |k|
             v = element[k]
-            inner_tags << tag('key', CGI::escapeHTML(k.to_s))
-            inner_tags << plist_node(v)
+            unless v.nil?
+              inner_tags << tag('key', CGI::escapeHTML(k.to_s))
+              inner_tags << plist_node(v)
+            end
           end
 
           output << tag('dict') {
