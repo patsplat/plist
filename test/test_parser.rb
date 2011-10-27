@@ -77,6 +77,11 @@ class TestParser < Test::Unit::TestCase
     assert_equal('Fish & Chips', data)
   end
 
+  def test_decode_ustring
+    data = Plist::parse_xml("<ustring>Fish 'N Chips \u2122</ustring>")
+    assert_equal("Fish 'N Chips \u2122", data)
+  end
+
   def test_comment_handling_and_empty_plist
     assert_nothing_raised do
       assert_nil( Plist::parse_xml( File.read('test/assets/commented.plist') ) )
