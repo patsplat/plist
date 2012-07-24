@@ -57,6 +57,10 @@ module Plist::Emit
   end
 
   private
+  def self.escapeHTML(string)
+    CGI::escapeHTML(string).gsub("'", "&apos;")
+  end
+
   def self.plist_node(element)
     output = ''
 
@@ -80,7 +84,7 @@ module Plist::Emit
 
           element.keys.sort.each do |k|
             v = element[k]
-            inner_tags << tag('key', CGI::escapeHTML(k.to_s))
+            inner_tags << tag('key', escapeHTML(k.to_s))
             inner_tags << plist_node(v)
           end
 
@@ -95,7 +99,7 @@ module Plist::Emit
       when Date # also catches DateTime
         output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
       when String, Symbol, Fixnum, Bignum, Integer, Float
-        output << tag(element_type(element), CGI::escapeHTML(element.to_s))
+        output << tag(element_type(element), escapeHTML(element.to_s))
       when IO, StringIO
         element.rewind
         contents = element.read

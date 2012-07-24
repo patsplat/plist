@@ -51,4 +51,10 @@ class TestGenerator < Test::Unit::TestCase
 
     File.unlink('test.plist')
   end
+
+  def test_escaping_xml
+    assert_equal "<string>&apos;</string>\n", Plist::Emit.dump("'", false)
+    assert_equal "<string>&amp;</string>\n", Plist::Emit.dump("&", false)
+    assert_equal "<string>&quot;&gt;&lt;</string>\n", Plist::Emit.dump("\"><", false)
+  end
 end
