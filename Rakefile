@@ -38,7 +38,7 @@ task :default => [ :test ]
 # Run the unit tests
 Rake::TestTask.new { |t|
   t.libs << "test"
-  t.pattern = 'test/test_*.rb'
+  t.test_files = TEST_FILES
   t.verbose = true
 }
 
