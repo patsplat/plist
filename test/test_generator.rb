@@ -51,4 +51,25 @@ class TestGenerator < Test::Unit::TestCase
 
     File.unlink('test.plist')
   end
+
+  # The hash in this test was failing with 'hsh.keys.sort',
+  # we are making sure it works with 'hsh.keys.sort_by'.
+  def test_sorting_keys
+    hsh = {:key1 => 1, :key4 => 4, 'key2' => 2, :key3 => 3}
+    output = Plist::Emit.plist_node(hsh)
+    expected = <<-STR
+<dict>
+  <key>key1</key>
+  <integer>1</integer>
+  <key>key2</key>
+  <integer>2</integer>
+  <key>key3</key>
+  <integer>3</integer>
+  <key>key4</key>
+  <integer>4</integer>
+</dict>
+    STR
+
+    assert_equal expected, output.gsub(/[\t]/, "\s\s")
+  end
 end
