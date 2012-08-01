@@ -92,6 +92,16 @@ class TestParser < Test::Unit::TestCase
     assert_nil data
   end
 
+  def test_xml_unescaping
+    result = Plist::parse_xml("test/assets/test_xml_escaping.plist")
+
+    # dict
+    assert_kind_of( Hash, result )
+
+    assert_equal( result['apos'], "'" )
+    assert_equal( result['amp'], "&" )
+  end
+
 end
 
 __END__

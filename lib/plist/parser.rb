@@ -130,6 +130,11 @@ module Plist
     def to_ruby
       raise "Unimplemented: " + self.class.to_s + "#to_ruby on #{self.inspect}"
     end
+
+    private
+    def self.unescapeHTML(string)
+      CGI::unescapeHTML(string.gsub("&apos;","'"))
+    end
   end
 
   class PList < PTag
@@ -158,13 +163,13 @@ module Plist
 
   class PKey < PTag
     def to_ruby
-      CGI::unescapeHTML(text || '')
+      PTag.unescapeHTML(text || '')
     end
   end
 
   class PString < PTag
     def to_ruby
-      CGI::unescapeHTML(text || '')
+      PTag.unescapeHTML(text || '')
     end
   end
 
