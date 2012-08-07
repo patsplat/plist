@@ -74,4 +74,25 @@ END
 
     assert_equal expected, [{:foo => 'bar'}, :b, 3].to_plist(false)
   end
+
+  def test_collection_without_indentation
+    original_indent = Plist::SETTINGS[:indent]
+    begin
+      Plist::SETTINGS[:indent] = nil
+      expected = <<END
+<array>
+<dict>
+<key>foo</key>
+<string>bar</string>
+</dict>
+<string>b</string>
+<integer>3</integer>
+</array>
+END
+
+      assert_equal expected, [{:foo => 'bar'}, :b, 3].to_plist(false)
+    ensure
+      Plist::SETTINGS[:indent] = original_indent
+    end
+  end
 end
