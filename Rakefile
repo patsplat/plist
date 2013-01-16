@@ -13,8 +13,8 @@ require 'rubygems'
 require 'rake'
 require 'rake/testtask'
 require 'rake/packagetask'
-require 'rake/gempackagetask'
 require 'rake/contrib/rubyforgepublisher'
+require 'rubygems/package_task'
 
 $:.unshift(File.dirname(__FILE__) + "/lib")
 require 'plist'
@@ -109,11 +109,11 @@ begin
   RDoc::Task.new do |rdoc|
     rdoc.title = "All-purpose Property List manipulation library"
     rdoc.main  = "README.rdoc"
-    
+
     rdoc.rdoc_dir = 'rdoc'
     rdoc.rdoc_files.include('README.rdoc', 'LICENSE', 'CHANGELOG')
     rdoc.rdoc_files.include('lib/**')
-    
+
     rdoc.options = [
       '-H', # show hash marks on method names in comments
       '-N', # show line numbers
@@ -146,7 +146,7 @@ EOD
   s.autorequire = 'plist'
 end
 
-Rake::GemPackageTask.new(spec) do |p|
+Gem::PackageTask.new(spec) do |p|
   p.gem_spec = spec
   p.need_tar = true
   p.need_zip = true
