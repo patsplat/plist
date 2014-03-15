@@ -52,11 +52,14 @@ class TestGenerator < Test::Unit::TestCase
     File.unlink('test.plist')
   end
 
+  def spaces_to_tabs(s)
+    return s.gsub("\s\s", "\t")
+  end
+
   # The hash in this test was failing with 'hsh.keys.sort',
   # we are making sure it works with 'hsh.keys.sort_by'.
   def test_sorting_keys
     hsh = {:key1 => 1, :key4 => 4, 'key2' => 2, :key3 => 3}
-    output = Plist::Emit.plist_node(hsh)
     expected = <<-STR
 <dict>
   <key>key1</key>
@@ -69,7 +72,39 @@ class TestGenerator < Test::Unit::TestCase
   <integer>4</integer>
 </dict>
     STR
+    expected = spaces_to_tabs(expected)
+    assert_equal expected, Plist::Emit.dump(hsh, false)
+  end
 
-    assert_equal expected, output.gsub(/[\t]/, "\s\s")
+  def test_hash_is_sorted
+    expected = <<END
+<dict>
+  <key>a</key>
+  <string>a</string>
+  <key>b</key>
+  <string>b</string>
+</dict>
+END
+    h = Hash.new
+    h['b'] = 'b'
+    h['a'] = 'a'
+    expected = spaces_to_tabs(expected)
+    assert_equal expected, Plist::Emit.dump(h, false)
+  end
+
+  def test_hash_keeps_order_when_desired
+    expected = <<END
+<dict>
+  <key>b</key>
+  <string>b</string>
+  <key>a</key>
+  <string>a</string>
+</dict>
+END
+    h = Hash.new
+    h['b'] = 'b'
+    h['a'] = 'a'
+    expected = spaces_to_tabs(expected)
+    assert_equal expected, Plist::Emit.dump(h, false, :sort => false)
   end
 end
