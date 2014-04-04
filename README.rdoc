@@ -20,7 +20,7 @@ Plist is a library to manipulate Property List files, also known as plists.  It 
 ==== Example Property List
 
   <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
   <plist version="1.0">
   <dict>
           <key>FirstName</key>
@@ -74,7 +74,7 @@ If you've mixed in <tt>Plist::Emit</tt> (which is already done for +Array+ and +
 This is equivalent to calling <tt>Plist::Emit.dump(obj)</tt>.  Either one will yield:
 
   <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
   <plist version="1.0">
   <array>
       <integer>1</integer>
