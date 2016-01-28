@@ -109,11 +109,11 @@ begin
   RDoc::Task.new do |rdoc|
     rdoc.title = "All-purpose Property List manipulation library"
     rdoc.main  = "README.rdoc"
-    
+
     rdoc.rdoc_dir = 'rdoc'
     rdoc.rdoc_files.include('README.rdoc', 'LICENSE', 'CHANGELOG')
     rdoc.rdoc_files.include('lib/**')
-    
+
     rdoc.options = [
       '-H', # show hash marks on method names in comments
       '-N', # show line numbers
