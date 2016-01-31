@@ -173,7 +173,7 @@ module Plist::Emit
   class IndentedString #:nodoc:
     attr_accessor :indent_string
 
-    def initialize(str = "\t")
+    def initialize(str = Plist::SETTINGS[:indent])
       @indent_string = str
       @contents = ''
       @indent_level = 0
