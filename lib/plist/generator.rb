@@ -125,13 +125,11 @@ module Plist::Emit
     out = nil
 
     if block_given?
-      out = IndentedString.new
+      out = RecursiveString.new
       out << "<#{type}>"
-      out.raise_indent
 
       out << block.call
 
-      out.lower_indent
       out << "</#{type}>"
     else
       out = "<#{type}>#{contents.to_s}</#{type}>\n"
@@ -169,26 +167,17 @@ module Plist::Emit
       raise "Don't know about this data type... something must be wrong!"
     end
   end
-  private
-  class IndentedString #:nodoc:
+
+  class RecursiveString #:nodoc:
     attr_accessor :indent_string
 
     def initialize(str = "\t")
       @indent_string = str
       @contents = ''
-      @indent_level = 0
     end
 
     def to_s
-      return @contents
-    end
-
-    def raise_indent
-      @indent_level += 1
-    end
-
-    def lower_indent
-      @indent_level -= 1 if @indent_level > 0
+      @contents
     end
 
     def <<(val)
@@ -197,17 +186,7 @@ module Plist::Emit
           self << f
         end
       else
-        # if it's already indented, don't bother indenting further
-        unless val =~ /\A#{@indent_string}/
-          indent = @indent_string * @indent_level
-
-          @contents << val.gsub(/^/, indent)
-        else
-          @contents << val
-        end
-
-        # it already has a newline, don't add another
-        @contents << "\n" unless val =~ /\n$/
+        @contents << val
       end
     end
   end
