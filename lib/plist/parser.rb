@@ -213,7 +213,7 @@ module Plist
       data = Base64.decode64(text.gsub(/\s+/, '')) unless text.nil?
       begin
         return Marshal.load(data)
-      rescue Exception => e
+      rescue Exception
         io = StringIO.new
         io.write data
         io.rewind
