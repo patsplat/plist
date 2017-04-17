@@ -1,6 +1,20 @@
 = plist - All-purpose Property List manipulation library
 
-=== Release version 3.0.0!
+=== Unreleased
+
+https://github.com/patsplat/plist/compare/dece870...HEAD
+
+* Your contribution here!
+
+=== 3.2.0 (2016-01-28)
+
+https://github.com/patsplat/plist/compare/ea0b4e7...dece870
+
+* Changed sort to sort_by in Plist::Emit.plist_node to allow mixed symbol and string hash keys
+* Updated deprecated File.exists? to File.exist?
+* Fixed defect in PData in which exception was thrown when <data/> element was read from plist
+
+=== 3.1.0 (2010-02-23)
 
 2010-02-23:
  * Ruby 1.9.x compatibility!
@@ -24,7 +38,7 @@
 2006-09-20 (r80):
  * tweak a comment in generator.rb to make it clear that we're not using Base64.b64encode because it's broken.
 
-=== Release version 3.0.0!
+=== 3.0.0 (2006-09-20)
 
 2006-09-20 (r77 - r79):
  * move IndentedString inside Plist::Emit and :nodoc: it
@@ -56,6 +70,8 @@
 * Sort hash keys before emitting (now we can test multi-element hashes!)
 * Inject #<=> into Symbol so that sorting Symbol-keyed hashes won't freak out
 
+=== 2.1.2 (2006-09-20)
+
 2006-09-12 (r47 - r51):
 * More test rejiggering
 * New tests to expose some bugs
@@ -68,7 +84,7 @@
 * Make the parser strip out comments and Marshal.load <data> elements if possible
 * Update some rdoc
 
-=== Release version 2.1.1!
+=== 2.1.1 (2006-09-10)
 
 2006-09-10 (r31 - r32):
 * Added encoding / decoding for entities (&amp; etc)
