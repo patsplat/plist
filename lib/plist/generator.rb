@@ -94,7 +94,7 @@ module Plist::Emit
         output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
       when Date # also catches DateTime
         output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
-      when String, Symbol, Fixnum, Bignum, Integer, Float
+      when String, Symbol, Integer, Float
         output << tag(element_type(element), CGI::escapeHTML(element.to_s))
       when IO, StringIO
         element.rewind
@@ -159,7 +159,7 @@ module Plist::Emit
     when String, Symbol
       'string'
 
-    when Fixnum, Bignum, Integer
+    when Integer
       'integer'
 
     when Float
