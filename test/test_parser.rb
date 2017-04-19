@@ -91,7 +91,11 @@ class TestParser < Test::Unit::TestCase
   end
 
   def test_filename_or_xml_is_encoded_with_ascii_8bit
-    xml = File.open("test/assets/non-ascii-but-utf-8.plist", "r:ASCII-8BIT", &:read)
+    # skip if Ruby version does not support String#force_encoding
+    return unless String.method_defined?(:force_encoding)
+
+    xml = File.read("test/assets/non-ascii-but-utf-8.plist")
+    xml.force_encoding("ASCII-8BIT")
 
     assert_nothing_raised do
       data = Plist::parse_xml(xml)

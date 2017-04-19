@@ -73,10 +73,10 @@ module Plist
     end
 
     TEXT       = /([^<]+)/
-    XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/um
-    DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/um
-    COMMENT_START = /\A<!--/u
-    COMMENT_END = /.*?-->/um
+    XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/m
+    DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/m
+    COMMENT_START = /\A<!--/
+    COMMENT_END = /.*?-->/m
 
 
     def parse
@@ -91,7 +91,25 @@ module Plist
         if @scanner.scan(COMMENT_START)
           @scanner.scan(COMMENT_END)
         elsif @scanner.scan(XMLDECL_PATTERN)
+          next unless defined?(Encoding)
+          next unless String.method_defined?(:force_encoding)
+
+          xml_encoding = @scanner[1].match(/(?:\A|\s)encoding=(?:"(.*?)"|'(.*?)')(?:\s|\Z)/)
+
+          next if xml_encoding.nil?
+
+          encoding = begin
+            Encoding.find(xml_encoding[1])
+          rescue ArgumentError
+            nil
+          end
+
+          next if encoding.nil?
+
+          # use the specified encoding for the rest of the file
+          @scanner.string = @scanner.rest.force_encoding(encoding)
         elsif @scanner.scan(DOCTYPE_PATTERN)
+          next
         elsif @scanner.scan(start_tag)
           @listener.tag_start(@scanner[1], nil)
           if (@scanner[2] =~ /\/$/)
