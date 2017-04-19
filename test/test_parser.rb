@@ -90,6 +90,12 @@ class TestParser < Test::Unit::TestCase
     assert_nil data
   end
 
-end
+  def test_filename_or_xml_is_encoded_with_ascii_8bit
+    xml = File.open("test/assets/non-ascii-but-utf-8.plist", "r:ASCII-8BIT", &:read)
 
-__END__
+    assert_nothing_raised do
+      data = Plist::parse_xml(xml)
+      assert_equal("\u0099", data["non-ascii-but-utf8-character"])
+    end
+  end
+end
