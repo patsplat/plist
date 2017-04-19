@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-#
 # = plist
 #
 # Copyright 2006-2010 Ben Bleything and Patrick May

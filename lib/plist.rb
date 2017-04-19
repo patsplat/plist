@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-#
 # = plist
 #
 # This is the main file for plist. Everything interesting happens in
