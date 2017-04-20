@@ -91,22 +91,11 @@ module Plist
         if @scanner.scan(COMMENT_START)
           @scanner.scan(COMMENT_END)
         elsif @scanner.scan(XMLDECL_PATTERN)
-          next unless defined?(Encoding)
-          next unless String.method_defined?(:force_encoding)
-
-          xml_encoding = @scanner[1].match(/(?:\A|\s)encoding=(?:"(.*?)"|'(.*?)')(?:\s|\Z)/)
-
-          next if xml_encoding.nil?
-
-          encoding = begin
-            Encoding.find(xml_encoding[1])
-          rescue ArgumentError
-            nil
-          end
-
+          encoding = parse_encoding_from_xml_declaration(@scanner[1])
           next if encoding.nil?
 
           # use the specified encoding for the rest of the file
+          next unless String.method_defined?(:force_encoding)
           @scanner.string = @scanner.rest.force_encoding(encoding)
         elsif @scanner.scan(DOCTYPE_PATTERN)
           next
@@ -122,6 +111,22 @@ module Plist
         else
           raise "Unimplemented element"
         end
+      end
+    end
+
+    private
+
+    def parse_encoding_from_xml_declaration(xml_declaration)
+      return unless defined?(Encoding)
+
+      xml_encoding = xml_declaration.match(/(?:\A|\s)encoding=(?:"(.*?)"|'(.*?)')(?:\s|\Z)/)
+
+      return if xml_encoding.nil?
+
+      begin
+        Encoding.find(xml_encoding[1])
+      rescue ArgumentError
+        nil
       end
     end
   end
