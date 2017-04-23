@@ -1,5 +1,5 @@
-#!/usr/bin/env ruby
-#
+# encoding: utf-8
+
 # = plist
 #
 # This is the main file for plist. Everything interesting happens in

@@ -1,5 +1,5 @@
-#!/usr/bin/env ruby
-#
+# encoding: utf-8
+
 # = plist
 #
 # Copyright 2006-2010 Ben Bleything and Patrick May
