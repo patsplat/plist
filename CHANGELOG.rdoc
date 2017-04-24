@@ -5,6 +5,7 @@
 https://github.com/patsplat/plist/compare/dece870...HEAD
 
 * Your contribution here!
+* Fix ASCII/UTF-8 error (https://github.com/patsplat/plist/pull/38).
 * Fix Fixnum, Bignum deprecations in Ruby 2.4
 * Fix unused variable `e` warning
 
