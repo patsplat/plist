@@ -2,9 +2,14 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/dece870...HEAD
+https://github.com/patsplat/plist/compare/v3.3.0...HEAD
 
 * Your contribution here!
+
+=== 3.3.0 (2017-04-28)
+
+https://github.com/patsplat/plist/compare/dece870...v3.3.0
+
 * Fix ASCII/UTF-8 error (https://github.com/patsplat/plist/pull/38).
 * Fix Fixnum, Bignum deprecations in Ruby 2.4
 * Fix unused variable `e` warning
