@@ -37,7 +37,7 @@ module Plist
 
     def initialize
       @result = nil
-      @open   = Array.new
+      @open   = []
     end
 
 
@@ -147,7 +147,7 @@ module Plist
 
     attr_accessor :text, :children
     def initialize
-      @children = Array.new
+      @children = []
     end
 
     def to_ruby
