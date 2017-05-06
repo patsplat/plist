@@ -163,7 +163,7 @@ module Plist
 
   class PDict < PTag
     def to_ruby
-      dict = Hash.new
+      dict = {}
       key = nil
 
       children.each do |c|
