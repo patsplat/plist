@@ -40,7 +40,6 @@ module Plist
       @open   = []
     end
 
-
     def tag_start(name, attributes)
       @open.push PTag::mappings[name].new
     end
@@ -77,7 +76,6 @@ module Plist
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/m
     COMMENT_START = /\A<!--/
     COMMENT_END = /.*?-->/m
-
 
     def parse
       plist_tags = PTag::mappings.keys.join('|')
