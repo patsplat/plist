@@ -11,18 +11,18 @@
 # === Load a plist file
 # This is the main point of the library:
 #
-#   r = Plist::parse_xml( filename_or_xml )
+#   r = Plist.parse_xml(filename_or_xml)
 module Plist
 # Note that I don't use these two elements much:
 #
 #  + Date elements are returned as DateTime objects.
 #  + Data elements are implemented as Tempfiles
 #
-# Plist::parse_xml will blow up if it encounters a Date element.
+# Plist.parse_xml will blow up if it encounters a Date element.
 # If you encounter such an error, or if you have a Date element which
 # can't be parsed into a Time object, please send your plist file to
 # plist@hexane.org so that I can implement the proper support.
-  def Plist::parse_xml( filename_or_xml )
+  def self.parse_xml(filename_or_xml)
     listener = Listener.new
     #parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
     parser = StreamParser.new(filename_or_xml, listener)
@@ -41,10 +41,10 @@ module Plist
     end
 
     def tag_start(name, attributes)
-      @open.push PTag::mappings[name].new
+      @open.push PTag.mappings[name].new
     end
 
-    def text( contents )
+    def text(contents)
       @open.last.text = contents if @open.last
     end
 
@@ -59,11 +59,11 @@ module Plist
   end
 
   class StreamParser
-    def initialize( plist_data_or_file, listener )
+    def initialize(plist_data_or_file, listener)
       if plist_data_or_file.respond_to? :read
         @xml = plist_data_or_file.read
       elsif File.exist? plist_data_or_file
-        @xml = File.read( plist_data_or_file )
+        @xml = File.read(plist_data_or_file)
       else
         @xml = plist_data_or_file
       end
@@ -78,13 +78,13 @@ module Plist
     COMMENT_END = /.*?-->/m
 
     def parse
-      plist_tags = PTag::mappings.keys.join('|')
+      plist_tags = PTag.mappings.keys.join('|')
       start_tag  = /<(#{plist_tags})([^>]*)>/i
       end_tag    = /<\/(#{plist_tags})[^>]*>/i
 
       require 'strscan'
 
-      @scanner = StringScanner.new( @xml )
+      @scanner = StringScanner.new(@xml)
       until @scanner.eos?
         if @scanner.scan(COMMENT_START)
           @scanner.scan(COMMENT_END)
@@ -130,14 +130,15 @@ module Plist
   end
 
   class PTag
-    @@mappings = { }
-    def PTag::mappings
+    @@mappings = {}
+
+    def self.mappings
       @@mappings
     end
 
-    def PTag::inherited( sub_class )
+    def self.inherited(sub_class)
       key = sub_class.to_s.downcase
-      key.gsub!(/^plist::/, '' )
+      key.gsub!(/^plist::/, '')
       key.gsub!(/^p/, '')  unless key == "plist"
 
       @@mappings[key] = sub_class
@@ -179,13 +180,13 @@ module Plist
 
   class PKey < PTag
     def to_ruby
-      CGI::unescapeHTML(text || '')
+      CGI.unescapeHTML(text || '')
     end
   end
 
   class PString < PTag
     def to_ruby
-      CGI::unescapeHTML(text || '')
+      CGI.unescapeHTML(text || '')
     end
   end
 

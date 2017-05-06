@@ -13,7 +13,7 @@ end
 class TestDataElements < Test::Unit::TestCase
 
   def setup
-    @result = Plist.parse_xml( 'test/assets/test_data_elements.plist' )
+    @result = Plist.parse_xml('test/assets/test_data_elements.plist')
   end
 
   def test_data_object_header
@@ -24,10 +24,10 @@ BAhvOhZNYXJzaGFsYWJsZU9iamVjdAY6CUBmb28iHnRoaXMgb2JqZWN0IHdhcyBtYXJz
 aGFsZWQ=
 </data>
 END
-    expected_elements = expected.chomp.split( "\n" )
+    expected_elements = expected.chomp.split("\n")
 
-    actual = Plist::Emit.dump( Object.new, false )
-    actual_elements = actual.chomp.split( "\n" )
+    actual = Plist::Emit.dump(Object.new, false)
+    actual_elements = actual.chomp.split("\n")
 
     # check for header
     assert_equal expected_elements.shift, actual_elements.shift
@@ -39,7 +39,7 @@ END
 
   def test_marshal_round_trip
     expected = MarshalableObject.new('this object was marshaled')
-    actual   = Plist.parse_xml( Plist::Emit.dump(expected, false) )
+    actual   = Plist.parse_xml(Plist::Emit.dump(expected, false))
 
     assert_kind_of expected.class, actual
     assert_equal expected.foo, actual.foo
@@ -99,23 +99,23 @@ END
   # supplied the test data, and provided the parsing code.
   def test_data
     # test reading plist <data> elements
-    data = Plist::parse_xml("test/assets/example_data.plist");
-    assert_equal( File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read )
+    data = Plist.parse_xml("test/assets/example_data.plist");
+    assert_equal(File.open("test/assets/example_data.jpg"){|f| f.read }, data['image'].read)
 
     # test writing data elements
     expected = File.read("test/assets/example_data.plist")
     result   = data.to_plist
     #File.open('result.plist', 'w') {|f|f.write(result)} # debug
-    assert_equal( expected, result )
+    assert_equal(expected, result)
 
     # Test changing the <data> object in the plist to a StringIO and writing.
     # This appears extraneous given that plist currently returns a StringIO,
     # so the above writing test also flexes StringIO#to_plist_node.
     # However, the interface promise is to return an IO, not a particular class.
     # plist used to return Tempfiles, which was changed solely for performance reasons.
-    data['image'] = StringIO.new( File.read("test/assets/example_data.jpg"))
+    data['image'] = StringIO.new(File.read("test/assets/example_data.jpg"))
 
-    assert_equal(expected, data.to_plist )
+    assert_equal(expected, data.to_plist)
 
   end
 

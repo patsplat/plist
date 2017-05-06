@@ -80,7 +80,7 @@ module Plist::Emit
 
           element.keys.sort_by{|k| k.to_s }.each do |k|
             v = element[k]
-            inner_tags << tag('key', CGI::escapeHTML(k.to_s))
+            inner_tags << tag('key', CGI.escapeHTML(k.to_s))
             inner_tags << plist_node(v)
           end
 
@@ -95,7 +95,7 @@ module Plist::Emit
       when Date # also catches DateTime
         output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
       when String, Symbol, Integer, Float
-        output << tag(element_type(element), CGI::escapeHTML(element.to_s))
+        output << tag(element_type(element), CGI.escapeHTML(element.to_s))
       when IO, StringIO
         element.rewind
         contents = element.read
@@ -104,13 +104,13 @@ module Plist::Emit
         # I used #encode64 instead of #b64encode (which allows a length arg)
         # because b64encode is b0rked and ignores the length arg.
         data = "\n"
-        Base64::encode64(contents).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
+        Base64.encode64(contents).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
         output << tag('data', data)
       else
-        output << comment( 'The <data> element below contains a Ruby object which has been serialized with Marshal.dump.' )
+        output << comment('The <data> element below contains a Ruby object which has been serialized with Marshal.dump.')
         data = "\n"
-        Base64::encode64(Marshal.dump(element)).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
-        output << tag('data', data )
+        Base64.encode64(Marshal.dump(element)).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
+        output << tag('data', data)
       end
     end
 

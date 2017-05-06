@@ -9,7 +9,7 @@ Plist is a library to manipulate Property List files, also known as plists.  It 
 
 === Parsing
 
-  result = Plist::parse_xml('path/to/example.plist')
+  result = Plist.parse_xml('path/to/example.plist')
 
   result.class
   => Hash
