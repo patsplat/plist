@@ -9,7 +9,7 @@ class SerializableObject
   end
 
   def to_plist_node
-    return "<string>#{CGI::escapeHTML @foo}</string>"
+    return "<string>#{CGI.escapeHTML(@foo)}</string>"
   end
 end
 
