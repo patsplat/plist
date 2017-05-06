@@ -130,10 +130,8 @@ module Plist
   end
 
   class PTag
-    @@mappings = {}
-
     def self.mappings
-      @@mappings
+      @mappings ||= {}
     end
 
     def self.inherited(sub_class)
@@ -141,7 +139,7 @@ module Plist
       key.gsub!(/^plist::/, '')
       key.gsub!(/^p/, '')  unless key == "plist"
 
-      @@mappings[key] = sub_class
+      mappings[key] = sub_class
     end
 
     attr_accessor :text, :children
