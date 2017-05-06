@@ -2,7 +2,7 @@ require 'test/unit'
 require 'plist'
 
 class TestParser < Test::Unit::TestCase
-  def test_Plist_parse_xml
+  def test_parse_xml
     result = Plist.parse_xml("test/assets/AlbumData.xml")
 
     # dict
