@@ -48,9 +48,9 @@ class TestParser < Test::Unit::TestCase
   end
 
   # uncomment this test to work on speed optimization
-  #def test_load_something_big
-  #  plist = Plist.parse_xml("~/Pictures/iPhoto Library/AlbumData.xml")
-  #end
+  # def test_load_something_big
+  #   plist = Plist.parse_xml("~/Pictures/iPhoto Library/AlbumData.xml")
+  # end
 
   # date fields are credited to
   def test_date_fields

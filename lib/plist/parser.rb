@@ -13,25 +13,25 @@
 #
 #   r = Plist.parse_xml(filename_or_xml)
 module Plist
-# Note that I don't use these two elements much:
-#
-#  + Date elements are returned as DateTime objects.
-#  + Data elements are implemented as Tempfiles
-#
-# Plist.parse_xml will blow up if it encounters a Date element.
-# If you encounter such an error, or if you have a Date element which
-# can't be parsed into a Time object, please send your plist file to
-# plist@hexane.org so that I can implement the proper support.
+  # Note that I don't use these two elements much:
+  #
+  #  + Date elements are returned as DateTime objects.
+  #  + Data elements are implemented as Tempfiles
+  #
+  # Plist.parse_xml will blow up if it encounters a Date element.
+  # If you encounter such an error, or if you have a Date element which
+  # can't be parsed into a Time object, please send your plist file to
+  # plist@hexane.org so that I can implement the proper support.
   def self.parse_xml(filename_or_xml)
     listener = Listener.new
-    #parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
+    # parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
     parser = StreamParser.new(filename_or_xml, listener)
     parser.parse
     listener.result
   end
 
   class Listener
-    #include REXML::StreamListener
+    # include REXML::StreamListener
 
     attr_accessor :result, :open
 
