@@ -45,7 +45,6 @@ class TestParser < Test::Unit::TestCase
     # false
     assert_kind_of( FalseClass, result["List of Albums"][1]["SlideShowUseTitles"] )
     assert( ! result["List of Albums"][1]["SlideShowUseTitles"] )
-
   end
 
   # uncomment this test to work on speed optimization
