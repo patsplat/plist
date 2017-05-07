@@ -188,6 +188,12 @@ module Plist
     end
   end
 
+  class PUstring < PTag
+    def to_ruby
+      CGI::unescapeHTML(text || '')
+    end
+  end
+
   class PArray < PTag
     def to_ruby
       children.collect do |c|
