@@ -74,6 +74,8 @@ If you've mixed in <tt>Plist::Emit</tt> (which is already done for +Array+ and +
 
   obj.to_plist
 
+NOTE: The .to_plist method will make the Ruby plist hash into a string. It will not automatically re-write an original plist. You need to use a string writing gem or method something similar to Pathname gem's write method or anything useful. 
+
 This is equivalent to calling <tt>Plist::Emit.dump(obj)</tt>.  Either one will yield:
 
   <?xml version="1.0" encoding="UTF-8"?>
