@@ -120,7 +120,7 @@ If for whatever reason you can't add this method, your object will be serialized
 
 == Credits
 
-plist is maintained by Ben Bleything <mailto:ben@bleything.net> and Patrick May <mailto:patrick@hexane.org>.  Patrick wrote most of the code; Ben is a recent addition to the project, having merged in his plist generation library.
+plist was authored by Ben Bleything <mailto:ben@bleything.net> and Patrick May <mailto:patrick@hexane.org>. Patrick wrote most of the code; Ben contributed his plist generation library. The project is currently maintained by @mattbrictson[https://github.com/mattbrictson].
 
 Other folks who have helped along the way:
 
@@ -129,6 +129,7 @@ Other folks who have helped along the way:
 [<b>Mat Schaffer</b>] who supplied code and test cases for <tt><data></tt> elements
 [<b>Michael Granger</b>] for encouragement and help
 [<b>Carsten Bormann, Chris Hoffman, Dana Contreras, Hongli Lai, Johan Sørensen</b>] for contributing Ruby 1.9.x compatibility fixes
+And thank you to all of the other GitHub contributors[https://github.com/patsplat/plist/graphs/contributors] not mentioned here!
 
 == License and Copyright
 
