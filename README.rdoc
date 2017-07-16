@@ -114,9 +114,9 @@ If for whatever reason you can't add this method, your object will be serialized
 
 == Links
 
-[Project Page]  http://plist.rubyforge.org
-[GitHub]        http://github.com/bleything/plist
-[RDoc]          http://plist.rubyforge.org
+[Rubygems]      https://rubygems.org/gems/plist
+[GitHub]        https://github.com/bleything/plist
+[RDoc]          http://www.rubydoc.info/gems/plist
 
 == Credits
 
