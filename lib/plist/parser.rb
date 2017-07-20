@@ -20,8 +20,9 @@ module Plist
   #
   # Plist.parse_xml will blow up if it encounters a Date element.
   # If you encounter such an error, or if you have a Date element which
-  # can't be parsed into a Time object, please send your plist file to
-  # plist@hexane.org so that I can implement the proper support.
+  # can't be parsed into a Time object, please create an issue
+  # attaching your plist file at https://github.com/patsplat/plist/issues
+  # so folks can implement the proper support.
   def self.parse_xml(filename_or_xml)
     listener = Listener.new
     # parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
