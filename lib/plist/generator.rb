@@ -22,14 +22,16 @@ module Plist
   #
   # For detailed usage instructions, refer to USAGE[link:files/docs/USAGE.html] and the methods documented below.
   module Emit
+    DEFAULT_INDENT = "\t".freeze
+
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.dump</tt> with +self+.
-    def to_plist(envelope = true)
-      return Plist::Emit.dump(self, envelope)
+    def to_plist(envelope = true, indent: DEFAULT_INDENT)
+      return Plist::Emit.dump(self, envelope, indent: indent)
     end
 
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.save_plist</tt> with +self+.
-    def save_plist(filename)
-      Plist::Emit.save_plist(self, filename)
+    def save_plist(filename, indent: DEFAULT_INDENT)
+      Plist::Emit.save_plist(self, filename, indent: indent)
     end
 
     # The following Ruby classes are converted into native plist types:
@@ -40,8 +42,8 @@ module Plist
     # +IO+ and +StringIO+ objects are encoded and placed in <data> elements; other objects are <tt>Marshal.dump</tt>'ed unless they implement +to_plist_node+.
     #
     # The +envelope+ parameters dictates whether or not the resultant plist fragment is wrapped in the normal XML/plist header and footer.  Set it to false if you only want the fragment.
-    def self.dump(obj, envelope = true)
-      output = plist_node(obj)
+    def self.dump(obj, envelope = true, indent: DEFAULT_INDENT)
+      output = plist_node(obj, indent: indent)
 
       output = wrap(output) if envelope
 
@@ -49,14 +51,14 @@ module Plist
     end
 
     # Writes the serialized object's plist to the specified filename.
-    def self.save_plist(obj, filename)
+    def self.save_plist(obj, filename, indent: DEFAULT_INDENT)
       File.open(filename, 'wb') do |f|
-        f.write(obj.to_plist)
+        f.write(obj.to_plist(indent: indent))
       end
     end
 
     private
-    def self.plist_node(element)
+    def self.plist_node(element, indent: DEFAULT_INDENT)
       output = ''
 
       if element.respond_to? :to_plist_node
@@ -67,7 +69,7 @@ module Plist
           if element.empty?
             output << "<array/>\n"
           else
-            output << tag('array') {
+            output << tag('array', indent: indent) {
               element.collect {|e| plist_node(e)}
             }
           end
@@ -79,22 +81,22 @@ module Plist
 
             element.keys.sort_by{|k| k.to_s }.each do |k|
               v = element[k]
-              inner_tags << tag('key', CGI.escapeHTML(k.to_s))
-              inner_tags << plist_node(v)
+              inner_tags << tag('key', CGI.escapeHTML(k.to_s), indent: indent)
+              inner_tags << plist_node(v, indent: indent)
             end
 
-            output << tag('dict') {
+            output << tag('dict', indent: indent) {
               inner_tags
             }
           end
         when true, false
           output << "<#{element}/>\n"
         when Time
-          output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
+          output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), indent: indent)
         when Date # also catches DateTime
-          output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'))
+          output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'), indent: indent)
         when String, Symbol, Integer, Float
-          output << tag(element_type(element), CGI.escapeHTML(element.to_s))
+          output << tag(element_type(element), CGI.escapeHTML(element.to_s), indent: indent)
         when IO, StringIO
           element.rewind
           contents = element.read
@@ -104,12 +106,12 @@ module Plist
           # because b64encode is b0rked and ignores the length arg.
           data = "\n"
           Base64.encode64(contents).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
-          output << tag('data', data)
+          output << tag('data', data, indent: indent)
         else
           output << comment('The <data> element below contains a Ruby object which has been serialized with Marshal.dump.')
           data = "\n"
           Base64.encode64(Marshal.dump(element)).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
-          output << tag('data', data)
+          output << tag('data', data, indent: indent)
         end
       end
 
@@ -120,11 +122,11 @@ module Plist
       return "<!-- #{content} -->\n"
     end
 
-    def self.tag(type, contents = '', &block)
+    def self.tag(type, contents = '', indent: DEFAULT_INDENT, &block)
       out = nil
 
       if block_given?
-        out = IndentedString.new
+        out = IndentedString.new(indent)
         out << "<#{type}>"
         out.raise_indent
 
