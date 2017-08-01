@@ -72,10 +72,10 @@ class TestGenerator < Test::Unit::TestCase
   end
 
   def test_custom_indent
-    hsh = { key1: 1, 'key2' => 2 }
-    output_plist_node = Plist::Emit.plist_node(hsh, indent: nil)
-    output_plist_dump_with_envelope = Plist::Emit.dump(hsh, indent: nil)
-    output_plist_dump_no_envelope = Plist::Emit.dump(hsh, false, indent: nil)
+    hsh = { :key1 => 1, 'key2' => 2 }
+    output_plist_node = Plist::Emit.plist_node(hsh, :indent =>  nil)
+    output_plist_dump_with_envelope = Plist::Emit.dump(hsh, true, :indent => nil)
+    output_plist_dump_no_envelope = Plist::Emit.dump(hsh, false, :indent => nil)
 
     expected_with_envelope = <<-STR
 <?xml version="1.0" encoding="UTF-8"?>
@@ -102,7 +102,7 @@ STR
     assert_equal expected_with_envelope, output_plist_dump_with_envelope
     assert_equal expected_no_envelope, output_plist_dump_no_envelope
 
-    hsh.save_plist('test.plist', indent: nil)
+    hsh.save_plist('test.plist', :indent => nil)
     output_plist_file = File.read('test.plist')
     assert_equal expected_with_envelope, output_plist_file
     File.unlink('test.plist')
