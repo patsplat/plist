@@ -7,6 +7,11 @@ Plist is a library to manipulate Property List files, also known as plists.  It 
 
 == Usage
 
+=== Security considerations
+
+Plist.parse_xml uses Marshal.load for <data/> attributes. If the <data/> attribute contains malicious data, an attacker can gain code execution.
+You should never use Plist.parse_xml with untrusted plists!
+
 === Parsing
 
   result = Plist.parse_xml('path/to/example.plist')
