@@ -112,6 +112,23 @@ When you attempt to serialize a +MyFancyString+ object, the +to_plist_node+ meth
 
 If for whatever reason you can't add this method, your object will be serialized with <tt>Marshal.dump</tt> instead.
 
+==== Custom indent
+
+You can customize the default indent foramt (default format is tab) or specify the indent format on each serialization. For example, if you want to reduce size of plist output, you can set the indent to <tt>nil</tt>.
+
+An example to change default indent format:
+
+  Plist::Emit::DEFAULT_INDENT = nil
+
+An example to specify indent format on dump:
+
+  Plist::Emit.dump({:foo => :bar}, false)
+  => "<dict>\n\t<key>foo</key>\n\t<string>bar</string>\n</dict>\n"
+
+  Plist::Emit.dump({:foo => :bar}, false, :indent => nil)
+  => "<dict>\n<key>foo</key>\n<string>bar</string>\n</dict>\n"
+
+
 == Links
 
 [Rubygems]      https://rubygems.org/gems/plist
