@@ -31,6 +31,12 @@ class TestGeneratorBasicTypes < Test::Unit::TestCase
     end
   end
 
+  def test_floats_that_can_be_rounded
+    [0.0, 4.0].each do |i|
+      assert_equal wrap('real', i.to_i), Plist::Emit.dump(i, false).chomp
+    end
+  end
+
   def test_booleans
     assert_equal "<true/>",  Plist::Emit.dump(true, false).chomp
     assert_equal "<false/>", Plist::Emit.dump(false, false).chomp

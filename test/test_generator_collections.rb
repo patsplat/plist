@@ -36,6 +36,17 @@ END
     assert_equal expected, {:foo => :bar, :abc => 123}.to_plist(false)
   end
 
+  def test_hash_with_newline_in_key
+    expected = <<END
+<dict>
+	<key>abc
+def</key>
+	<real>123</real>
+</dict>
+END
+    assert_equal expected, {"abc\ndef" => 123.0}.to_plist(false)
+  end
+
   def test_empty_hash
     expected = <<END
 <dict/>
