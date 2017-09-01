@@ -36,7 +36,19 @@ class TestGenerator < Test::Unit::TestCase
     str = 'this object implements #to_plist_node'
     so = SerializableObject.new(str)
 
-    assert_equal "<string>#{str}</string>", Plist::Emit.dump(so, false)
+    assert_equal "<string>#{str}</string>\n", Plist::Emit.dump(so, false)
+  end
+
+  def test_dumping_serializable_object_with_indent
+    str = 'this object implements #to_plist_node'
+    so = SerializableObject.new(str)
+    expected = <<-END
+<array>
+	<string>#{str}</string>
+</array>
+END
+
+    assert_equal expected, Plist::Emit.dump([so], false)
   end
 
   def test_write_plist

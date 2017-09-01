@@ -33,7 +33,14 @@ module Plist
 
     def generate element
       if element.respond_to? :to_plist_node
-        @output << element.to_plist_node
+        plist_node = element.to_plist_node
+        if !plist_node.start_with?(@indent)
+          plist_node = @indent + plist_node
+        end
+        if !plist_node.end_with?("\n")
+          plist_node = plist_node + "\n"
+        end
+        @output << plist_node
         return
       end
 
