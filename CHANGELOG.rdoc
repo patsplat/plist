@@ -2,9 +2,14 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/v3.3.0...HEAD
+https://github.com/patsplat/plist/compare/v3.4.0...HEAD
 
 * Your contribution here!
+
+=== 3.4.0 (2017-12-08)
+
+https://github.com/patsplat/plist/compare/v3.3.0...v3.4.0
+
 * Support custom indent string (https://github.com/patsplat/plist/pull/44)
 
 === 3.3.0 (2017-04-28)
