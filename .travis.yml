@@ -8,9 +8,11 @@ rvm:
   - 1.9.3
   - 2.0.0-p648 # macOS
   - 2.1.10
-  - 2.2.7
-  - 2.3.4
-  - 2.4.1
+  - 2.2.10
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
+  - 2.6
   - ruby-head
   - jruby-head
 before_install: gem install bundler -v '~> 1.14' --conservative
