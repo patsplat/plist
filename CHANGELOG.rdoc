@@ -2,9 +2,15 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/v3.4.0...HEAD
+https://github.com/patsplat/plist/compare/v3.5.0...HEAD
 
 * Your contribution here!
+
+=== 3.5.0 (2018-12-22)
+
+https://github.com/patsplat/plist/compare/v3.4.0...v3.5.0
+
+* Only ship the required libs in the gem artifact (https://github.com/patsplat/plist/pull/48)
 
 === 3.4.0 (2017-12-08)
 
