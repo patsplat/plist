@@ -72,7 +72,7 @@ module Plist
       @listener = listener
     end
 
-    TEXT       = /([^<]+)/
+    TEXT = /([^<]+)|<!\[CDATA\[(.*)\]\]>/
     XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/m
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/m
     COMMENT_START = /\A<!--/
