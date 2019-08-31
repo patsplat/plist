@@ -1,7 +1,6 @@
 sudo: false
 language: ruby
 rvm:
-  - ree
   - jruby-18mode
   - jruby-19mode
   - 1.9.3
