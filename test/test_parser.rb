@@ -67,6 +67,21 @@ class TestParser < Test::Unit::TestCase
     assert_equal("2", data['key']['subkey'])
   end
 
+  def test_cdata
+    data = Plist.parse_xml("<string><![CDATA[<unescaped/>]]></string>")
+    assert_equal('<unescaped/>', data)
+  end
+
+  def test_mixed_text_and_cdata
+    data = Plist.parse_xml('<string>text and <![CDATA[<string>unescaped</string>]]></string>')
+    assert_equal('text and <string>unescaped</string>', data)
+  end
+
+  def test_unescaped_cdata_inside_cdata
+    data = Plist.parse_xml('<string><![CDATA[<![CDATA[ ... ]]]]><![CDATA[>]]></string>')
+    assert_equal('<![CDATA[ ... ]]>', data)
+  end
+
   # bug fix for decoding entities
   #  reported by Matthias Peick <matthias@peick.de>
   def test_decode_entities

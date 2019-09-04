@@ -46,7 +46,10 @@ module Plist
     end
 
     def text(contents)
-      @open.last.text = contents if @open.last
+      if @open.last
+        @open.last.text ||= ''
+        @open.last.text.concat(contents)
+      end
     end
 
     def tag_end(name)
@@ -72,7 +75,8 @@ module Plist
       @listener = listener
     end
 
-    TEXT       = /([^<]+)/
+    TEXT = /([^<]+)/
+    CDATA = /<!\[CDATA\[(.*?)\]\]>/
     XMLDECL_PATTERN = /<\?xml\s+(.*?)\?>*/m
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/m
     COMMENT_START = /\A<!--/
@@ -104,6 +108,8 @@ module Plist
             @listener.tag_end(@scanner[1])
           end
         elsif @scanner.scan(TEXT)
+          @listener.text(@scanner[1])
+        elsif @scanner.scan(CDATA)
           @listener.text(@scanner[1])
         elsif @scanner.scan(end_tag)
           @listener.tag_end(@scanner[1])

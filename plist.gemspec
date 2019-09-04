@@ -20,7 +20,9 @@ Gem::Specification.new do |spec|
   spec.files = %w{LICENSE.txt} + Dir.glob("lib/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.14"
+  spec.required_ruby_version = ">= 1.9.3"
+
+  spec.add_development_dependency "bundler", ">= 1.14"
   spec.add_development_dependency "rake", "~> 10.5"
   spec.add_development_dependency "test-unit", "~> 1.2"
 end
