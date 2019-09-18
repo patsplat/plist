@@ -118,7 +118,7 @@ class TestParser < Test::Unit::TestCase
   end
 
   def test_unimplemented_element
-    assert_raise RuntimeError do
+    assert_raise Plist::UnimplementedElementError do
       Plist.parse_xml('<string>Fish &amp; Chips</tring>')
     end
   end
