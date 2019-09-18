@@ -116,4 +116,10 @@ class TestParser < Test::Unit::TestCase
       assert_equal("\u0099", data["non-ascii-but-utf8-character"])
     end
   end
+
+  def test_unimplemented_element
+    assert_raise RuntimeError do
+      Plist.parse_xml('<string>Fish &amp; Chips</tring>')
+    end
+  end
 end
