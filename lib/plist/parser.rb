@@ -84,6 +84,8 @@ module Plist
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/m
     COMMENT_START = /\A<!--/
     COMMENT_END = /.*?-->/m
+    UNIMPLEMENTED_ERROR = 'Unimplemented element. ' \
+      'Consider reporting via https://github.com/patsplat/plist/issues'
 
     def parse
       plist_tags = PTag.mappings.keys.join('|')
@@ -117,7 +119,7 @@ module Plist
         elsif @scanner.scan(end_tag)
           @listener.tag_end(@scanner[1])
         else
-          raise UnimplementedElementError.new("Unimplemented element")
+          raise UnimplementedElementError.new(UNIMPLEMENTED_ERROR)
         end
       end
     end
