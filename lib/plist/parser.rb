@@ -13,6 +13,9 @@
 #
 #   r = Plist.parse_xml(filename_or_xml)
 module Plist
+  # Raised when an element is not implemented
+  class UnimplementedElementError < RuntimeError; end
+
   # Note that I don't use these two elements much:
   #
   #  + Date elements are returned as DateTime objects.
@@ -81,6 +84,8 @@ module Plist
     DOCTYPE_PATTERN = /\s*<!DOCTYPE\s+(.*?)(\[|>)/m
     COMMENT_START = /\A<!--/
     COMMENT_END = /.*?-->/m
+    UNIMPLEMENTED_ERROR = 'Unimplemented element. ' \
+      'Consider reporting via https://github.com/patsplat/plist/issues'
 
     def parse
       plist_tags = PTag.mappings.keys.join('|')
@@ -114,7 +119,7 @@ module Plist
         elsif @scanner.scan(end_tag)
           @listener.tag_end(@scanner[1])
         else
-          raise "Unimplemented element"
+          raise UnimplementedElementError.new(UNIMPLEMENTED_ERROR)
         end
       end
     end
