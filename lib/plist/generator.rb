@@ -23,6 +23,7 @@ module Plist
   # For detailed usage instructions, refer to USAGE[link:files/docs/USAGE.html] and the methods documented below.
   module Emit
     DEFAULT_INDENT = "\t"
+    SORT_HASH_KEYS = true
 
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.dump</tt> with +self+.
     def to_plist(envelope = true, options = {})
@@ -45,7 +46,7 @@ module Plist
     #
     # The +envelope+ parameters dictates whether or not the resultant plist fragment is wrapped in the normal XML/plist header and footer.  Set it to false if you only want the fragment.
     def self.dump(obj, envelope = true, options = {})
-      options = { :indent => DEFAULT_INDENT }.merge(options)
+      options = { :indent => DEFAULT_INDENT, :sort_hash_keys => SORT_HASH_KEYS }.merge(options)
       output = plist_node(obj, options)
 
       output = wrap(output) if envelope
@@ -63,7 +64,7 @@ module Plist
 
     private
     def self.plist_node(element, options = {})
-      options = { :indent => DEFAULT_INDENT }.merge(options)
+      options = { :indent => DEFAULT_INDENT, :sort_hash_keys => SORT_HASH_KEYS }.merge(options)
       output = ''
 
       if element.respond_to? :to_plist_node
@@ -83,8 +84,13 @@ module Plist
             output << "<dict/>\n"
           else
             inner_tags = []
-
-            element.keys.sort_by{|k| k.to_s }.each do |k|
+            keys = []
+            if options[:sort_hash_keys]
+              keys = element.keys.sort_by{|k| k.to_s }
+            else
+              keys = element.keys
+            end
+            keys.each do |k|
               v = element[k]
               inner_tags << tag('key', CGI.escapeHTML(k.to_s), options)
               inner_tags << plist_node(v, options)
