@@ -107,4 +107,20 @@ STR
     assert_equal expected_with_envelope, output_plist_file
     File.unlink('test.plist')
   end
+
+  def test_no_sort_hash_keys
+    hsh = { :keyC => 'c', :keyA => 'a', :keyB => 'b' }
+    output_plist_dump_no_envelope = Plist::Emit.dump(hsh, false, {:indent => nil, :sort_hash_keys => false})
+    expected_no_envelope = <<-STR
+<dict>
+<key>keyC</key>
+<string>c</string>
+<key>keyA</key>
+<string>a</string>
+<key>keyB</key>
+<string>b</string>
+</dict>
+STR
+    assert_equal expected_no_envelope, output_plist_dump_no_envelope
+  end
 end
