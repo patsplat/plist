@@ -206,15 +206,22 @@ module Plist
         else
           # if it's already indented, don't bother indenting further
           unless val =~ /\A#{@indent_string}/
-            indent = @indent_string * @indent_level
+            val.split("\n").each do |line|
+              if line.match(/\A\s*</)
+                indent = @indent_string * @indent_level
+              else
+                # do not indent multiline string values
+                indent = ''
+              end
 
-            @contents << val.gsub(/^/, indent)
+              @contents << line.gsub(/^/, indent) + "\n"
+            end
           else
             @contents << val
           end
 
           # it already has a newline, don't add another
-          @contents << "\n" unless val =~ /\n$/
+          @contents.gsub(/\n+\z/, "\n")
         end
       end
     end
