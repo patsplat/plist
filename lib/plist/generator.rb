@@ -220,8 +220,8 @@ module Plist
             @contents << val
           end
 
-          # it already has a newline, don't add another
-          @contents.gsub(/\n+\z/, "\n")
+          # only include one newline at the end.
+          @contents = @contents.gsub(/\n*\z/, '') + "\n"
         end
       end
     end
