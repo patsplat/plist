@@ -26,13 +26,11 @@ module Plist
 
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.dump</tt> with +self+.
     def to_plist(envelope = true, options = {})
-      options = { :indent => DEFAULT_INDENT }.merge(options)
-      return Plist::Emit.dump(self, envelope, options)
+      Plist::Emit.dump(self, envelope, options)
     end
 
     # Helper method for injecting into classes.  Calls <tt>Plist::Emit.save_plist</tt> with +self+.
     def save_plist(filename, options = {})
-      options = { :indent => DEFAULT_INDENT }.merge(options)
       Plist::Emit.save_plist(self, filename, options)
     end
 
@@ -46,184 +44,129 @@ module Plist
     # The +envelope+ parameters dictates whether or not the resultant plist fragment is wrapped in the normal XML/plist header and footer.  Set it to false if you only want the fragment.
     def self.dump(obj, envelope = true, options = {})
       options = { :indent => DEFAULT_INDENT }.merge(options)
-      output = plist_node(obj, options)
 
+      output = PlistBuilder.new(options[:indent]).build(obj)
       output = wrap(output) if envelope
 
-      return output
+      output
     end
 
     # Writes the serialized object's plist to the specified filename.
     def self.save_plist(obj, filename, options = {})
-      options = { :indent => DEFAULT_INDENT }.merge(options)
       File.open(filename, 'wb') do |f|
         f.write(obj.to_plist(true, options))
       end
     end
 
     private
-    def self.plist_node(element, options = {})
-      options = { :indent => DEFAULT_INDENT }.merge(options)
-      output = ''
 
-      if element.respond_to? :to_plist_node
-        output << element.to_plist_node
-      else
-        case element
-        when Array
-          if element.empty?
-            output << "<array/>\n"
-          else
-            output << tag('array', '', options) {
-              element.collect {|e| plist_node(e, options)}
-            }
-          end
-        when Hash
-          if element.empty?
-            output << "<dict/>\n"
-          else
-            inner_tags = []
+    class PlistBuilder
+      def initialize(indent_str)
+        @indent_str = indent_str.to_s
+      end
 
-            element.keys.sort_by{|k| k.to_s }.each do |k|
-              v = element[k]
-              inner_tags << tag('key', CGI.escapeHTML(k.to_s), options)
-              inner_tags << plist_node(v, options)
-            end
-
-            output << tag('dict', '', options) {
-              inner_tags
-            }
-          end
-        when true, false
-          output << "<#{element}/>\n"
-        when Time
-          output << tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), options)
-        when Date # also catches DateTime
-          output << tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'), options)
-        when String, Symbol, Integer, Float
-          output << tag(element_type(element), CGI.escapeHTML(element.to_s), options)
-        when IO, StringIO
-          element.rewind
-          contents = element.read
-          # note that apple plists are wrapped at a different length then
-          # what ruby's base64 wraps by default.
-          # I used #encode64 instead of #b64encode (which allows a length arg)
-          # because b64encode is b0rked and ignores the length arg.
-          data = "\n"
-          Base64.encode64(contents).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
-          output << tag('data', data, options)
+      def build(element, level=0)
+        if element.respond_to? :to_plist_node
+          element.to_plist_node
         else
-          output << comment('The <data> element below contains a Ruby object which has been serialized with Marshal.dump.')
-          data = "\n"
-          Base64.encode64(Marshal.dump(element)).gsub(/\s+/, '').scan(/.{1,68}/o) { data << $& << "\n" }
-          output << tag('data', data, options)
+          case element
+          when Array
+            if element.empty?
+              tag('array', nil, level)
+            else
+              tag('array', nil, level) {
+                element.collect {|e| build(e, level + 1) }.join
+              }
+            end
+          when Hash
+            if element.empty?
+              tag('dict', nil, level)
+            else
+              tag('dict', '', level) do
+                element.sort_by{|k,v| k.to_s }.collect do |k,v| 
+                  tag('key', CGI.escapeHTML(k.to_s), level + 1) +
+                  build(v, level + 1)
+                end.join
+              end
+            end
+          when true, false
+            tag(element, nil, level)
+          when Time
+            tag('date', element.utc.strftime('%Y-%m-%dT%H:%M:%SZ'), level)
+          when Date # also catches DateTime
+            tag('date', element.strftime('%Y-%m-%dT%H:%M:%SZ'), level)
+          when String, Symbol, Integer, Float
+            tag(element_type(element), CGI.escapeHTML(element.to_s), level)
+          when IO, StringIO
+            data = element.tap(&:rewind).read 
+            data_tag(data, level)
+          else
+            data = Marshal.dump(element)
+            comment_tag('The <data> element below contains a Ruby object which has been serialized with Marshal.dump.') +
+            data_tag(data, level)
+          end
         end
       end
 
-      return output
-    end
+      private
 
-    def self.comment(content)
-      return "<!-- #{content} -->\n"
-    end
-
-    def self.tag(type, contents = '', options = {}, &block)
-      options = { :indent => DEFAULT_INDENT }.merge(options)
-      out = nil
-
-      if block_given?
-        out = IndentedString.new(options[:indent])
-        out << "<#{type}>"
-        out.raise_indent
-
-        out << block.call
-
-        out.lower_indent
-        out << "</#{type}>"
-      else
-        out = "<#{type}>#{contents.to_s}</#{type}>\n"
+      def tag(type, contents, level, &block)
+        if block_given?
+          indent("<#{type}>\n", level) +
+          block.call +
+          indent("</#{type}>\n", level)
+        elsif contents.to_s.empty?
+          indent("<#{type}/>\n", level)
+        else
+          indent("<#{type}>#{contents.to_s}</#{type}>\n", level)
+        end
       end
 
-      return out.to_s
+      def data_tag(data, level)
+        # note that apple plists are wrapped at a different length then
+        # what ruby's base64 wraps by default.
+        # I used #encode64 instead of #b64encode (which allows a length arg)
+        # because b64encode is b0rked and ignores the length arg.
+        tag('data', nil, level) do
+          Base64.encode64(data)
+                .gsub(/\s+/, '')
+                .scan(/.{1,68}/o)
+                .collect { |line| indent(line, level) }
+                .join("\n")
+                .concat("\n")
+        end
+      end
+
+      def indent(str, level)
+        @indent_str.to_s * level + str
+      end
+
+      def element_type(item)
+        case item
+        when String, Symbol
+          'string'
+        when Integer
+          'integer'
+        when Float
+          'real'
+        else
+          raise "Don't know about this data type... something must be wrong!"
+        end
+      end
+
+      def comment_tag(content)
+        return "<!-- #{content} -->\n"
+      end
     end
 
     def self.wrap(contents)
-      output = ''
-
-      output << '<?xml version="1.0" encoding="UTF-8"?>' + "\n"
+      output =  '<?xml version="1.0" encoding="UTF-8"?>' + "\n"
       output << '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' + "\n"
       output << '<plist version="1.0">' + "\n"
-
       output << contents
-
       output << '</plist>' + "\n"
 
-      return output
-    end
-
-    def self.element_type(item)
-      case item
-      when String, Symbol
-        'string'
-
-      when Integer
-        'integer'
-
-      when Float
-        'real'
-
-      else
-        raise "Don't know about this data type... something must be wrong!"
-      end
-    end
-    private
-    class IndentedString #:nodoc:
-      attr_accessor :indent_string
-
-      def initialize(str = "\t")
-        @indent_string = str
-        @contents = ''
-        @indent_level = 0
-      end
-
-      def to_s
-        return @contents
-      end
-
-      def raise_indent
-        @indent_level += 1
-      end
-
-      def lower_indent
-        @indent_level -= 1 if @indent_level > 0
-      end
-
-      def <<(val)
-        if val.is_a? Array
-          val.each do |f|
-            self << f
-          end
-        else
-          # if it's already indented, don't bother indenting further
-          unless val =~ /\A#{@indent_string}/
-            val.split("\n").each do |line|
-              if line.match(/\A\s*</)
-                indent = @indent_string * @indent_level
-              else
-                # do not indent multiline string values
-                indent = ''
-              end
-
-              @contents << line.gsub(/^/, indent) + "\n"
-            end
-          else
-            @contents << val
-          end
-
-          # only include one newline at the end.
-          @contents = @contents.gsub(/\n*\z/, '') + "\n"
-        end
-      end
+      output
     end
   end
 end

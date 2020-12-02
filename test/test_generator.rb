@@ -54,7 +54,7 @@ class TestGenerator < Test::Unit::TestCase
   # we are making sure it works with 'hsh.keys.sort_by'.
   def test_sorting_keys
     hsh = {:key1 => 1, :key4 => 4, 'key2' => 2, :key3 => 3}
-    output = Plist::Emit.plist_node(hsh)
+    output = Plist::Emit.dump(hsh, false)
     expected = <<-STR
 <dict>
   <key>key1</key>
@@ -73,7 +73,6 @@ class TestGenerator < Test::Unit::TestCase
 
   def test_custom_indent
     hsh = { :key1 => 1, 'key2' => 2 }
-    output_plist_node = Plist::Emit.plist_node(hsh, :indent =>  nil)
     output_plist_dump_with_envelope = Plist::Emit.dump(hsh, true, :indent => nil)
     output_plist_dump_no_envelope = Plist::Emit.dump(hsh, false, :indent => nil)
 
@@ -98,7 +97,6 @@ STR
 <integer>2</integer>
 </dict>
 STR
-    assert_equal expected_no_envelope, output_plist_node
     assert_equal expected_with_envelope, output_plist_dump_with_envelope
     assert_equal expected_no_envelope, output_plist_dump_no_envelope
 
