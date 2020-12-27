@@ -1,5 +1,9 @@
-sudo: false
+---
 language: ruby
+cache: bundler
+branches:
+  only:
+    - master
 rvm:
   - jruby-18mode
   - jruby-19mode
