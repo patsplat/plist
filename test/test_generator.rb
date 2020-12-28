@@ -105,4 +105,34 @@ STR
     assert_equal expected_with_envelope, output_plist_file
     File.unlink('test.plist')
   end
+
+  def test_string_containing_newlines
+    source = {
+      data: {
+        a_multiline_string: "This is a string with\nmultiple line\nbreaks.",
+        a_normal_string: "This is a string without a line break.",
+        integer: 100
+      }
+    }
+    plist_emit_dump = Plist::Emit.dump(source, true)
+    assert_equal(<<-EXPECTED, plist_emit_dump.gsub(/\t/, "  "))
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>data</key>
+  <dict>
+    <key>a_multiline_string</key>
+    <string>This is a string with
+multiple line
+breaks.</string>
+    <key>a_normal_string</key>
+    <string>This is a string without a line break.</string>
+    <key>integer</key>
+    <integer>100</integer>
+  </dict>
+</dict>
+</plist>
+EXPECTED
+  end
 end
