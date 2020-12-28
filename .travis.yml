@@ -1,5 +1,9 @@
-sudo: false
+---
 language: ruby
+cache: bundler
+branches:
+  only:
+    - master
 rvm:
   - jruby-18mode
   - jruby-19mode
@@ -11,6 +15,8 @@ rvm:
   - 2.4.5
   - 2.5.3
   - 2.6
+  - 2.7
+  - 3.0
   - ruby-head
   - jruby-head
 before_install: gem install bundler -v '~> 1.14' --conservative

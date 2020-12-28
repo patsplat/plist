@@ -6,6 +6,7 @@ https://github.com/patsplat/plist/compare/v3.5.0...HEAD
 
 * Your contribution here!
 * Do not indent multiline string values (https://github.com/patsplat/plist/pull/54)
+* Add Ruby 2.7 and 3.0 to CI
 
 === 3.5.0 (2018-12-22)
 
