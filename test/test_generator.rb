@@ -54,7 +54,7 @@ class TestGenerator < Test::Unit::TestCase
   # we are making sure it works with 'hsh.keys.sort_by'.
   def test_sorting_keys
     hsh = {:key1 => 1, :key4 => 4, 'key2' => 2, :key3 => 3}
-    output = Plist::Emit.plist_node(hsh)
+    output = Plist::Emit.dump(hsh, false)
     expected = <<-STR
 <dict>
   <key>key1</key>
@@ -73,7 +73,6 @@ class TestGenerator < Test::Unit::TestCase
 
   def test_custom_indent
     hsh = { :key1 => 1, 'key2' => 2 }
-    output_plist_node = Plist::Emit.plist_node(hsh, :indent =>  nil)
     output_plist_dump_with_envelope = Plist::Emit.dump(hsh, true, :indent => nil)
     output_plist_dump_no_envelope = Plist::Emit.dump(hsh, false, :indent => nil)
 
@@ -98,7 +97,6 @@ STR
 <integer>2</integer>
 </dict>
 STR
-    assert_equal expected_no_envelope, output_plist_node
     assert_equal expected_with_envelope, output_plist_dump_with_envelope
     assert_equal expected_no_envelope, output_plist_dump_no_envelope
 
@@ -106,5 +104,35 @@ STR
     output_plist_file = File.read('test.plist')
     assert_equal expected_with_envelope, output_plist_file
     File.unlink('test.plist')
+  end
+
+  def test_string_containing_newlines
+    source = {
+      data: {
+        a_multiline_string: "This is a string with\nmultiple line\nbreaks.",
+        a_normal_string: "This is a string without a line break.",
+        integer: 100
+      }
+    }
+    plist_emit_dump = Plist::Emit.dump(source, true)
+    assert_equal(<<-EXPECTED, plist_emit_dump.gsub(/\t/, "  "))
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>data</key>
+  <dict>
+    <key>a_multiline_string</key>
+    <string>This is a string with
+multiple line
+breaks.</string>
+    <key>a_normal_string</key>
+    <string>This is a string without a line break.</string>
+    <key>integer</key>
+    <integer>100</integer>
+  </dict>
+</dict>
+</plist>
+EXPECTED
   end
 end
