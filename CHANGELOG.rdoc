@@ -2,11 +2,25 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/v3.5.0...HEAD
+https://github.com/patsplat/plist/compare/v3.6.0...HEAD
 
 * Your contribution here!
+
+=== 3.6.0 (2020-12-30)
+
+https://github.com/patsplat/plist/compare/v3.5.0...v3.6.0
+
+New features and important changes:
+
 * Do not indent multiline string values (https://github.com/patsplat/plist/pull/54)
-* Add Ruby 2.7 and 3.0 to CI
+* Add `Plist::UnimplementedElementError` (https://github.com/patsplat/plist/pull/51)
+* Add support for text inside `<![CDATA[ ... ]]>` (https://github.com/patsplat/plist/pull/49)
+
+Housekeeping:
+
+* Add Ruby 2.7 and 3.0 to CI (https://github.com/patsplat/plist/pull/55)
+* add docker-compose for development (https://github.com/patsplat/plist/pull/47)
+* Replace `require` with `require_relative`(https://github.com/patsplat/plist/pull/52)
 
 === 3.5.0 (2018-12-22)
 
