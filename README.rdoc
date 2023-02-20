@@ -1,7 +1,7 @@
 = All-purpose Property List manipulation library
 
 {<img src="https://badge.fury.io/rb/plist.svg" alt="Gem Version" />}[https://rubygems.org/gems/plist]
-{<img src="https://travis-ci.org/patsplat/plist.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/patsplat/plist]
+{<img src="https://github.com/patsplat/plist/actions/workflows/ci.yml/badge.svg" alt="Build Status" />}[https://github.com/patsplat/plist/actions/workflows/ci.yml]
 
 Plist is a library to manipulate Property List files, also known as plists.  It can parse plist files into native Ruby data structures as well as generating new plist files from your Ruby objects.
 
