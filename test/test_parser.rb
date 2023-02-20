@@ -122,4 +122,56 @@ class TestParser < Test::Unit::TestCase
       Plist.parse_xml('<string>Fish &amp; Chips</tring>')
     end
   end
+
+  def test_marshal_is_enabled_by_default_meaning_data_is_passed_to_marshal_load
+    plist = <<-PLIST.strip
+      <plist version="1.0">
+      <dict>
+        <key>Token</key>
+        <data>
+        BANUb2tlbg==
+        </data>
+      </dict>
+      </plist>
+    PLIST
+
+    data = Plist.parse_xml(plist)
+    # "BANUb2tlbg==" is interpreted as `true` when base64 decoded and passed to Marshal.load
+    assert_equal(true, data["Token"])
+  end
+
+  def test_data_unrecognized_by_marshal_load_is_returned_as_raw_binary
+    jpeg = File.read(File.expand_path("../assets/example_data.jpg", __FILE__))
+    plist = <<-PLIST.strip
+      <plist version="1.0">
+      <dict>
+        <key>Token</key>
+        <data>
+        #{Base64.encode64(jpeg)}
+        </data>
+      </dict>
+      </plist>
+    PLIST
+
+    data = Plist.parse_xml(plist)
+    assert_kind_of(StringIO, data["Token"])
+    assert_equal(jpeg, data["Token"].read)
+  end
+
+  def test_marshal_can_be_disabled_so_that_data_is_always_returned_as_raw_binary
+    plist = <<-PLIST.strip
+      <plist version="1.0">
+      <dict>
+        <key>Token</key>
+        <data>
+        BANUb2tlbg==
+        </data>
+      </dict>
+      </plist>
+    PLIST
+
+    data = Plist.parse_xml(plist, marshal: false)
+    assert_kind_of(StringIO, data["Token"])
+    assert_equal("\x04\x03Token", data["Token"].read)
+  end
 end
