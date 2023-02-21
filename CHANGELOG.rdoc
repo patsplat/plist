@@ -2,9 +2,21 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/v3.6.0...HEAD
+https://github.com/patsplat/plist/compare/v3.7.0...HEAD
 
 * Your contribution here!
+
+=== 3.7.0 (2023-02-21)
+
+https://github.com/patsplat/plist/compare/v3.6.0...v3.7.0
+
+New features and important changes:
+
+* Allow `Marshal.load` to be disabled for `Plist.parse_xml` (https://github.com/patsplat/plist/pull/61)
+
+Housekeeping:
+
+* Migrate from Travis CI to GitHub Actions; add Ruby 3.1 and 3.2 to CI matrix (https://github.com/patsplat/plist/pull/59)
 
 === 3.6.0 (2020-12-30)
 
