@@ -26,6 +26,11 @@ module Plist
   # can't be parsed into a Time object, please create an issue
   # attaching your plist file at https://github.com/patsplat/plist/issues
   # so folks can implement the proper support.
+  #
+  # By default, <data> will be assumed to be a marshaled Ruby object and
+  # interpreted with <tt>Marshal.load</tt>. Pass <tt>marshal: false</tt>
+  # to disable this behavior and return the raw binary data as an IO
+  # object instead.
   def self.parse_xml(filename_or_xml, options={})
     listener = Listener.new(options)
     # parser = REXML::Parsers::StreamParser.new(File.new(filename), listener)
