@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'base64'
 require 'plist'
 
 class TestParser < Test::Unit::TestCase
