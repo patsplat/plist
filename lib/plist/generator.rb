@@ -126,7 +126,7 @@ module Plist
         # note that apple plists are wrapped at a different length then
         # what ruby's pack wraps by default.
         tag('data', nil, level) do
-          [data].pack("m")
+          [data].pack("m") # equivalent to Base64.encode64(data)
                 .gsub(/\s+/, '')
                 .scan(/.{1,68}/o)
                 .collect { |line| indent(line, level) }
