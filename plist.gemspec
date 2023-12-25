@@ -21,6 +21,4 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.required_ruby_version = ">= 1.9.3"
-
-  spec.add_dependency "base64"
 end
