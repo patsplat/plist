@@ -2,9 +2,21 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/v3.7.0...HEAD
+https://github.com/patsplat/plist/compare/v3.7.1...HEAD
 
 * Your contribution here!
+
+=== 3.7.1 (2023-12-26)
+
+https://github.com/patsplat/plist/compare/v3.7.0...v3.7.1
+
+Bug fixes:
+
+* Remove runtime dependency on `base64` gem to fix Ruby 3.3 warning (https://github.com/patsplat/plist/pull/63)
+
+Housekeeping:
+
+* Add Ruby 3.3 to CI and fix CI for Ruby < 2.3 (https://github.com/patsplat/plist/pull/64)
 
 === 3.7.0 (2023-02-21)
 
