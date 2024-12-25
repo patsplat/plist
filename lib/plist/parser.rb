@@ -56,7 +56,7 @@ module Plist
 
     def text(contents)
       if @open.last
-        @open.last.text ||= ''
+        @open.last.text ||= String.new
         @open.last.text.concat(contents)
       end
     end
