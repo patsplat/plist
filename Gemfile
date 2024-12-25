@@ -11,4 +11,8 @@ if Gem::Requirement.new(">= 3.3").satisfied_by?(Gem::Version.new(RUBY_VERSION))
   gem "base64"
 end
 
-gem "test-unit", "~> 3.5"
+if Gem::Requirement.new("< 2.0").satisfied_by?(Gem::Version.new(RUBY_VERSION))
+  gem "test-unit", "~> 3.5.9"
+else
+  gem "test-unit", "~> 3.5"
+end
