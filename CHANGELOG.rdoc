@@ -2,9 +2,22 @@
 
 === Unreleased
 
-https://github.com/patsplat/plist/compare/v3.7.1...HEAD
+https://github.com/patsplat/plist/compare/v3.7.2...HEAD
 
 * Your contribution here!
+
+=== 3.7.2 (2024-12-26)
+
+https://github.com/patsplat/plist/compare/v3.7.1...v3.7.2
+
+Bug fixes:
+
+* Fix frozen string literal warnings on Ruby 3.4 (https://github.com/patsplat/plist/pull/65)
+
+Housekeeping:
+
+* Add Ruby 3.4 to CI (https://github.com/patsplat/plist/pull/66)
+* Pin test-unit gem to ensure CI works on Ruby 1.9 (https://github.com/patsplat/plist/pull/67)
 
 === 3.7.1 (2023-12-26)
 
