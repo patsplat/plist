@@ -53,7 +53,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
 </data>
 END
 
-    expected.chomp!
+    expected = expected.chomp
 
     fd = IO.sysopen('test/assets/example_data.bin')
     io = IO.open(fd, 'r')
