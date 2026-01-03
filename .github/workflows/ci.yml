@@ -9,9 +9,6 @@ jobs:
     strategy:
       matrix:
         ruby: ["1.9", "2.0", "2.1", "2.2"]
-    env:
-      # Allow old ruby images to be used (image manifest v2 schema 1)
-      DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - uses: actions/checkout@v6
         with:
@@ -19,7 +16,7 @@ jobs:
       - name: bundle exec rake test (within ruby:${{ matrix.ruby }} image)
         uses: addnab/docker-run-action@v3
         with:
-          image: ruby:${{ matrix.ruby }}
+          image: corpusops/ruby:${{ matrix.ruby }}
           options: -v ${{ github.workspace }}:/work
           run: |
             cd /work
