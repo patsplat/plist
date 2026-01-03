@@ -9,6 +9,9 @@ jobs:
     strategy:
       matrix:
         ruby: ["1.9", "2.0", "2.1", "2.2"]
+    env:
+      # Allow old ruby images to be used (image manifest v2 schema 1)
+      DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
       - uses: actions/checkout@v6
         with:
