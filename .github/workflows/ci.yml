@@ -5,20 +5,23 @@ on:
   pull_request:
 jobs:
   test-legacy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ruby: ["1.9", "2.0", "2.1", "2.2"]
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v6
         with:
-          ruby-version: ${{ matrix.ruby }}
-          rubygems: ${{ matrix.ruby == '1.9' && '2.7.11' || 'default' }}
-          bundler-cache: true
-      - name: Run tests
-        run: bundle exec rake test
+          persist-credentials: false
+      - name: bundle exec rake test (within ruby:${{ matrix.ruby }} image)
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ruby:${{ matrix.ruby }}
+          options: -v ${{ github.workspace }}:/work
+          run: |
+            cd /work
+            bundle install
+            bundle exec rake test
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -39,7 +42,7 @@ jobs:
             "jruby-head",
           ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
