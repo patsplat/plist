@@ -115,10 +115,13 @@ module Plist
           indent("<#{type}>\n", level) +
           block.call +
           indent("</#{type}>\n", level)
-        elsif contents.to_s.empty?
-          indent("<#{type}/>\n", level)
         else
-          indent("<#{type}>#{contents.to_s}</#{type}>\n", level)
+          str = contents.to_s
+          if str.empty?
+            indent("<#{type}/>\n", level)
+          else
+            indent("<#{type}>#{str}</#{type}>\n", level)
+          end
         end
       end
 
@@ -126,8 +129,7 @@ module Plist
         # note that apple plists are wrapped at a different length then
         # what ruby's pack wraps by default.
         tag('data', nil, level) do
-          [data].pack("m") # equivalent to Base64.encode64(data)
-                .gsub(/\s+/, '')
+          [data].pack("m0") # equivalent to Base64.strict_encode64(data)
                 .scan(/.{1,68}/o)
                 .collect { |line| indent(line, level) }
                 .join("\n")
@@ -136,7 +138,7 @@ module Plist
       end
 
       def indent(str, level)
-        @indent_str.to_s * level + str
+        @indent_str * level + str
       end
 
       def element_type(item)

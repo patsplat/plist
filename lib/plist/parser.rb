@@ -93,10 +93,23 @@ module Plist
     UNIMPLEMENTED_ERROR = 'Unimplemented element. ' \
       'Consider reporting via https://github.com/patsplat/plist/issues'
 
+    def self.start_tag_pattern
+      @start_tag_pattern ||= begin
+        tags = PTag.mappings.keys.join('|')
+        /<(#{tags})([^>]*)>/i
+      end
+    end
+
+    def self.end_tag_pattern
+      @end_tag_pattern ||= begin
+        tags = PTag.mappings.keys.join('|')
+        /<\/(#{tags})[^>]*>/i
+      end
+    end
+
     def parse
-      plist_tags = PTag.mappings.keys.join('|')
-      start_tag  = /<(#{plist_tags})([^>]*)>/i
-      end_tag    = /<\/(#{plist_tags})[^>]*>/i
+      start_tag = self.class.start_tag_pattern
+      end_tag   = self.class.end_tag_pattern
 
       require 'strscan'
 
@@ -249,7 +262,7 @@ module Plist
   class PData < PTag
     def to_ruby
       # unpack("m")[0] is equivalent to Base64.decode64
-      data = text.gsub(/\s+/, '').unpack("m")[0] unless text.nil?
+      data = text.delete(" \t\n\r").unpack("m")[0] unless text.nil?
       begin
         return Marshal.load(data) if options[:marshal]
       rescue Exception
