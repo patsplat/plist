@@ -9,7 +9,7 @@
 # Distributed under the MIT License
 #
 
-require 'cgi'
+require RUBY_VERSION < '3.5' ? 'cgi' : 'cgi/escape'
 require 'stringio'
 
 require_relative 'plist/generator'

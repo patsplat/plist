@@ -6,6 +6,10 @@ https://github.com/patsplat/plist/compare/v3.7.2...HEAD
 
 * Your contribution here!
 
+Bug fixes:
+
+* Require `cgi/escape` instead of `cgi` on Ruby 4.0, which removed the `cgi` library and warns when it is required
+
 === 3.7.2 (2024-12-26)
 
 https://github.com/patsplat/plist/compare/v3.7.1...v3.7.2
