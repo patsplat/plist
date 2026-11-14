@@ -118,6 +118,14 @@ class TestParser < Test::Unit::TestCase
     end
   end
 
+  def test_xml_declaration_with_single_quoted_encoding
+    xml = "<?xml version='1.0' encoding='UTF-8'?>\n<plist version='1.0'><string>caf\u00e9</string></plist>"
+    data = Plist.parse_xml(xml.dup.force_encoding("ASCII-8BIT"))
+
+    assert_equal("caf\u00e9", data)
+    assert_equal(Encoding::UTF_8, data.encoding)
+  end
+
   def test_unimplemented_element
     assert_raise Plist::UnimplementedElementError do
       Plist.parse_xml('<string>Fish &amp; Chips</tring>')

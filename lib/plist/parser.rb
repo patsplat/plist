@@ -140,7 +140,7 @@ module Plist
       return if xml_encoding.nil?
 
       begin
-        Encoding.find(xml_encoding[1])
+        Encoding.find(xml_encoding[1] || xml_encoding[2])
       rescue ArgumentError
         nil
       end
